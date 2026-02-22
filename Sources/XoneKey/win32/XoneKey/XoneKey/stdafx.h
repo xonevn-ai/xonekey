@@ -45,13 +45,8 @@ redistribute your new version, it MUST be open source.
 
 #include "../../../engine/Engine.h"
 
-#include "XoneKeyManager.h"
-#include "XoneKeyHelper.h"
-#include "ToastNotification.h"
-#include "SystemTrayHelper.h"
-#include "ApplicationHealthMonitor.h"
-#include "PerformanceLogger.h"
-#include "NetworkHelper.h"
+// Note: Project-specific headers removed from stdafx.h to avoid circular dependencies
+// and to ensure changes to these headers trigger proper recompilation.
 
 using namespace std;
 

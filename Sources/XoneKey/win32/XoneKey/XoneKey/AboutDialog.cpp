@@ -14,6 +14,7 @@ redistribute your new version, it MUST be open source.
 #include "stdafx.h"
 #include "AboutDialog.h"
 #include "AppDelegate.h"
+#include "XoneKeyHelper.h"
 
 
 AboutDialog::AboutDialog(const HINSTANCE &hInstance, const int &resourceId)

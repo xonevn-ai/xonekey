@@ -192,7 +192,7 @@ extern "C" {
     }
     
     void queryFrontMostApp() {
-        if ([[[NSWorkspace sharedWorkspace] frontmostApplication].bundleIdentifier compare:OPENKEY_BUNDLE] != 0) {
+        if ([[[NSWorkspace sharedWorkspace] frontmostApplication].bundleIdentifier compare:XONEKEY_BUNDLE] != 0) {
             _frontMostApp = [[NSWorkspace sharedWorkspace] frontmostApplication].bundleIdentifier;
             if (_frontMostApp == nil)
                 _frontMostApp = [[NSWorkspace sharedWorkspace] frontmostApplication].localizedName != nil ?

@@ -12,7 +12,8 @@ You can fork, modify, improve this program. If you
 redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #pragma once
-#include "stdafx.h"
+#include <windows.h>
+#include <string>
 
 /**
  * Application Health Monitor
@@ -21,22 +22,22 @@ redistribute your new version, it MUST be open source.
 class ApplicationHealthMonitor {
 private:
     static ApplicationHealthMonitor* _instance;
-    UINT_PTR _heartbeatTimerId;
+    HANDLE _hThread;
+    HANDLE _hStopEvent;
     DWORD _lastHeartbeatTime;
     DWORD _startTime;
     bool _isMonitoring;
-    mutable CRITICAL_SECTION _cs;  // Mutable to allow const member functions to lock
+    mutable CRITICAL_SECTION _cs;
     
     enum {
-        HEARTBEAT_INTERVAL_MS = 30000, // 30 seconds
-        HEARTBEAT_TIMEOUT_MS = 60000   // 60 seconds (2 missed heartbeats)
+        CHECK_INTERVAL_MS = 5000,      // Check every 5 seconds
+        HEARTBEAT_TIMEOUT_MS = 60000   // 60 seconds (hang threshold)
     };
     
     ApplicationHealthMonitor();
     ~ApplicationHealthMonitor();
     
-    static VOID CALLBACK HeartbeatTimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-    void UpdateHeartbeat();
+    static DWORD WINAPI MonitorThreadProc(LPVOID lpParam);
     void CheckHealth();
     
 public:

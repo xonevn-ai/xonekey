@@ -1,12 +1,12 @@
 //
 // mac.h
-// Created by Daniel Do on 8/21/19.
+// Created by Daniel Do on 8/21/25.
 // Copyright (c) 2025 Daniel Do. All rights reserved.
 //
 
 
-#ifndef OPENKEY_MAC_H
-#define OPENKEY_MAC_H
+#ifndef XONEKEY_MAC_H
+#define XONEKEY_MAC_H
 
 //define Key code for mac keyboard
 #define KEY_ESC                                 53
@@ -75,4 +75,4 @@
 #define KEY_COMMA                               43
 #define KEY_SLASH                               44
 
-#endif //OPENKEY_MAC_H
+#endif //XONEKEY_MAC_H

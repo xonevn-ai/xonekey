@@ -16,7 +16,7 @@ redistribute your new version, it MUST be open source.
 
 extern int CF_RTF;
 extern int CF_HTML;
-extern int CF_OPENKEY;
+extern int CF_XONEKEY;
 
 class XoneKeyHelper {
 private:
@@ -38,7 +38,7 @@ public:
 	static wstring getFullPath();
 
 	static wstring getClipboardText(const int& type);
-	static void setClipboardText(LPCTSTR data, const int& len, const int& type);
+	static bool setClipboardText(LPCTSTR data, const int& len, const int& type);
 
 	static bool quickConvert();
 

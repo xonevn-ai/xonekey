@@ -11,25 +11,30 @@ which is released under GPL license.
 You can fork, modify, improve this program. If you
 redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
+#include "stdafx.h"
 #include "ApplicationHealthMonitor.h"
 #include "XoneKeyHelper.h"
 #include "PerformanceLogger.h"
+#include "XoneKeyManager.h"
 #include <sstream>
 
 ApplicationHealthMonitor* ApplicationHealthMonitor::_instance = nullptr;
 
 ApplicationHealthMonitor::ApplicationHealthMonitor()
-    : _heartbeatTimerId(0)
+    : _hThread(NULL)
+    , _hStopEvent(NULL)
     , _lastHeartbeatTime(0)
     , _startTime(GetTickCount())
     , _isMonitoring(false)
 {
     InitializeCriticalSection(&_cs);
+    _hStopEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 }
 
 ApplicationHealthMonitor::~ApplicationHealthMonitor()
 {
     StopMonitoring();
+    if (_hStopEvent) CloseHandle(_hStopEvent);
     DeleteCriticalSection(&_cs);
 }
 
@@ -61,31 +66,23 @@ bool ApplicationHealthMonitor::StartMonitoring()
         return true;
     }
     
-    // Create a hidden window for timer messages
-    HWND hWnd = FindWindow(APP_CLASS, NULL);
-    if (hWnd == NULL)
-    {
-        LeaveCriticalSection(&_cs);
-        return false;
-    }
-    
     _lastHeartbeatTime = GetTickCount();
     _startTime = GetTickCount();
+    ResetEvent(_hStopEvent);
     
-    // Set up timer for heartbeat check
-    _heartbeatTimerId = SetTimer(hWnd, 1, HEARTBEAT_INTERVAL_MS, HeartbeatTimerProc);
+    _hThread = CreateThread(NULL, 0, MonitorThreadProc, this, 0, NULL);
     
-    if (_heartbeatTimerId == 0)
+    if (_hThread == NULL)
     {
         LeaveCriticalSection(&_cs);
-        XoneKeyHelper::LogError("Failed to create heartbeat timer");
+        XoneKeyHelper::LogError("Failed to create health monitor thread");
         return false;
     }
     
     _isMonitoring = true;
     LeaveCriticalSection(&_cs);
     
-    PerformanceLogger::LogInfo("Application health monitoring started");
+    PerformanceLogger::LogInfo("Application health monitoring thread started");
     return true;
 }
 
@@ -99,17 +96,18 @@ void ApplicationHealthMonitor::StopMonitoring()
         return;
     }
     
-    HWND hWnd = FindWindow(APP_CLASS, NULL);
-    if (hWnd != NULL && _heartbeatTimerId != 0)
+    SetEvent(_hStopEvent);
+    LeaveCriticalSection(&_cs);
+    
+    if (_hThread)
     {
-        KillTimer(hWnd, _heartbeatTimerId);
-        _heartbeatTimerId = 0;
+        WaitForSingleObject(_hThread, 5000);
+        CloseHandle(_hThread);
+        _hThread = NULL;
     }
     
     _isMonitoring = false;
-    LeaveCriticalSection(&_cs);
-    
-    PerformanceLogger::LogInfo("Application health monitoring stopped");
+    PerformanceLogger::LogInfo("Application health monitoring thread stopped");
 }
 
 void ApplicationHealthMonitor::SignalHeartbeat()
@@ -119,17 +117,16 @@ void ApplicationHealthMonitor::SignalHeartbeat()
     LeaveCriticalSection(&_cs);
 }
 
-VOID CALLBACK ApplicationHealthMonitor::HeartbeatTimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+DWORD WINAPI ApplicationHealthMonitor::MonitorThreadProc(LPVOID lpParam)
 {
-    UNREFERENCED_PARAMETER(hwnd);
-    UNREFERENCED_PARAMETER(uMsg);
-    UNREFERENCED_PARAMETER(idEvent);
-    UNREFERENCED_PARAMETER(dwTime);
+    ApplicationHealthMonitor* pThis = (ApplicationHealthMonitor*)lpParam;
     
-    if (_instance != nullptr)
+    while (WaitForSingleObject(pThis->_hStopEvent, CHECK_INTERVAL_MS) == WAIT_TIMEOUT)
     {
-        _instance->CheckHealth();
+        pThis->CheckHealth();
     }
+    
+    return 0;
 }
 
 void ApplicationHealthMonitor::CheckHealth()
@@ -139,30 +136,29 @@ void ApplicationHealthMonitor::CheckHealth()
     DWORD currentTime = GetTickCount();
     DWORD timeSinceLastHeartbeat = 0;
     
-    // Safe calculation that handles GetTickCount() overflow after ~49 days
     if (currentTime >= _lastHeartbeatTime)
     {
         timeSinceLastHeartbeat = currentTime - _lastHeartbeatTime;
     }
     else
     {
-        // Overflow occurred (GetTickCount wrapped around), calculate correctly
+        // Overflow occurred
         timeSinceLastHeartbeat = (MAXDWORD - _lastHeartbeatTime) + currentTime + 1;
     }
     
-    // Update heartbeat timestamp (main message loop is running)
-    _lastHeartbeatTime = currentTime;
-    
-    // Check if we've missed heartbeats
     if (timeSinceLastHeartbeat > HEARTBEAT_TIMEOUT_MS)
     {
         std::stringstream ss;
-        ss << "Application health check failed: No heartbeat for " 
-           << timeSinceLastHeartbeat << "ms (threshold: " << HEARTBEAT_TIMEOUT_MS << "ms)";
+        ss << "CRITICAL: Application hang detected! No heartbeat for " 
+           << timeSinceLastHeartbeat << "ms";
         PerformanceLogger::LogError(ss.str());
         
-        // Log additional diagnostic information
-        PerformanceLogger::LogWarning("Application may be unresponsive - attempting recovery");
+        // Attempt recovery: re-initialize hooks if they might be frozen
+        // This is a last resort. In a real scenario, we might want to restart the app
+        // or signal the main thread to unfreeze.
+        PerformanceLogger::LogWarning("Attempting hook recovery...");
+        XoneKeyManager::freeEngine();
+        XoneKeyManager::initEngine();
     }
     
     LeaveCriticalSection(&_cs);
@@ -180,7 +176,8 @@ bool ApplicationHealthMonitor::IsHealthy() const
 {
     EnterCriticalSection(&_cs);
     DWORD currentTime = GetTickCount();
-    DWORD timeSinceLastHeartbeat = currentTime - _lastHeartbeatTime;
+    DWORD timeSinceLastHeartbeat = (currentTime >= _lastHeartbeatTime) ? 
+        (currentTime - _lastHeartbeatTime) : ((MAXDWORD - _lastHeartbeatTime) + currentTime + 1);
     bool healthy = timeSinceLastHeartbeat < HEARTBEAT_TIMEOUT_MS;
     LeaveCriticalSection(&_cs);
     return healthy;

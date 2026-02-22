@@ -18,6 +18,8 @@ redistribute your new version, it MUST be open source.
 #include <fstream>
 #include <sstream>
 #include "NetworkHelper.h"
+#include "XoneKeyManager.h"
+#include <psapi.h>
 
 #pragma comment(lib, "version.lib")
 #pragma comment(lib, "Urlmon.lib")
@@ -44,7 +46,7 @@ static CRITICAL_SECTION _processQueryCs; // Thread safety for process query
 
 int CF_RTF = RegisterClipboardFormat(_T("Rich Text Format"));
 int CF_HTML = RegisterClipboardFormat(_T("HTML Format"));
-int CF_OPENKEY = RegisterClipboardFormat(_T("XoneKey Format"));
+int CF_XONEKEY = RegisterClipboardFormat(_T("XoneKey Format"));
 
 // Initialize critical section for thread-safe process query
 // This will be initialized on first use
@@ -100,16 +102,7 @@ void XoneKeyHelper::setRegBinary(LPCTSTR key, const BYTE *pData, const int &size
 
 BYTE *XoneKeyHelper::getRegBinary(LPCTSTR key, DWORD &outSize)
 {
-	static BYTE *_staticRegData = NULL; // Static variable to track allocation
-
 	openKey();
-
-	// Free any previously allocated memory
-	if (_staticRegData)
-	{
-		delete[] _staticRegData;
-		_staticRegData = NULL;
-	}
 
 	DWORD size = 0;
 	LONG result = RegQueryValueEx(hKey, key, 0, 0, 0, &size);
@@ -121,27 +114,26 @@ BYTE *XoneKeyHelper::getRegBinary(LPCTSTR key, DWORD &outSize)
 		return NULL;
 	}
 
-	_staticRegData = new BYTE[size];
-	if (_staticRegData == NULL)
+	BYTE* pBuffer = new BYTE[size];
+	if (pBuffer == NULL)
 	{
 		RegCloseKey(hKey);
 		outSize = 0;
 		return NULL;
 	}
 
-	result = RegQueryValueEx(hKey, key, 0, 0, _staticRegData, &size);
+	result = RegQueryValueEx(hKey, key, 0, 0, pBuffer, &size);
 	RegCloseKey(hKey);
 
 	if (result != ERROR_SUCCESS)
 	{
-		delete[] _staticRegData;
-		_staticRegData = NULL;
+		delete[] pBuffer;
 		outSize = 0;
 		return NULL;
 	}
 
 	outSize = size;
-	return _staticRegData;
+	return pBuffer;
 }
 
 void XoneKeyHelper::registerRunOnStartup(const int &val)
@@ -231,14 +223,10 @@ DWORD WINAPI ProcessQueryWorkerThread(LPVOID lpParam)
 
 string &XoneKeyHelper::getFrontMostAppExecuteName()
 {
-	// Initialize critical section if needed
 	InitializeProcessQueryCs();
 	
-	// Try to enter critical section with timeout protection
-	// Use TryEnterCriticalSection to avoid blocking indefinitely
 	if (!TryEnterCriticalSection(&_processQueryCs))
 	{
-		// If we can't enter immediately, return cached value to avoid blocking
 		return _exeNameUtf8;
 	}
 	
@@ -262,94 +250,68 @@ string &XoneKeyHelper::getFrontMostAppExecuteName()
 		return _exeNameUtf8;
 	}
 	
-	// Use timeout-protected process query
+	// Start async update if process changed, but don't wait for it
 	_cacheProcessId = _tempProcessId;
 	
-	ProcessQueryParams params;
-	params.processId = _tempProcessId;
-	params.hProcess = NULL;
-	params.success = false;
-	params.hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	ProcessQueryParams* params = new ProcessQueryParams();
+	params->processId = _tempProcessId;
+	params->hProcess = NULL;
+	params->success = false;
+	params->hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	
-	if (params.hEvent == NULL)
+	if (params->hEvent == NULL)
 	{
-		// If we can't create event, fall back to cached value
+		delete params;
 		LeaveCriticalSection(&_processQueryCs);
 		return _exeNameUtf8;
 	}
 	
-	// Create worker thread for process query
-	HANDLE hThread = CreateThread(NULL, 0, ProcessQueryWorkerThread, &params, 0, NULL);
-	if (hThread == NULL)
-	{
-		CloseHandle(params.hEvent);
-		LeaveCriticalSection(&_processQueryCs);
-		return _exeNameUtf8;
-	}
-	
-	// Wait for thread completion with timeout
-	DWORD waitResult = WaitForSingleObject(params.hEvent, PROCESS_QUERY_TIMEOUT_MS);
-	
-	if (waitResult == WAIT_TIMEOUT)
-	{
-		// Timeout occurred - return cached value without blocking
-		// Note: We don't terminate the thread as it will clean up naturally
-		// The thread will finish and clean up resources when OpenProcess completes
-		CloseHandle(hThread); // Thread handle can be closed, thread continues running
-		CloseHandle(params.hEvent);
-		LeaveCriticalSection(&_processQueryCs);
-		return _exeNameUtf8; // Return cached value on timeout
-	}
-	
-	// Thread completed successfully
-	CloseHandle(hThread);
-	CloseHandle(params.hEvent);
-	
-	if (!params.success || params.hProcess == NULL)
-	{
-		LeaveCriticalSection(&_processQueryCs);
-		return _unknownProgram;
-	}
-	
-	// Copy result
-	wcscpy_s(_exePath, params.exePath);
-	CloseHandle(params.hProcess);
+	HANDLE hThread = CreateThread(NULL, 0, [](LPVOID lpParam) -> DWORD {
+		ProcessQueryParams* p = (ProcessQueryParams*)lpParam;
+		
+		// Try to query the process name
+		p->hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, p->processId);
+		if (p->hProcess == NULL) {
+			p->hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, p->processId);
+		}
+		
+		if (p->hProcess != NULL) {
+			TCHAR path[1024];
+			if (GetProcessImageFileName(p->hProcess, path, 1024) != 0) {
+				TCHAR* name = _tcsrchr(path, '\\');
+				if (name == NULL) name = path;
+				else name++;
 
-	if (wcscmp(_exePath, _T("")) == 0)
-	{
-		LeaveCriticalSection(&_processQueryCs);
-		return _unknownProgram;
+				InitializeProcessQueryCs();
+				EnterCriticalSection(&_processQueryCs);
+				
+				// Update the global cache
+				int size_needed = WideCharToMultiByte(CP_UTF8, 0, name, (int)lstrlen(name), NULL, 0, NULL, NULL);
+				if (size_needed > 0) {
+					std::string strTo(size_needed, 0);
+					WideCharToMultiByte(CP_UTF8, 0, name, (int)lstrlen(name), &strTo[0], size_needed, NULL, NULL);
+					
+					if (strTo != "XoneKey64.exe" && strTo != "XoneKey32.exe" && strTo != "explorer.exe") {
+						_exeNameUtf8 = strTo;
+					}
+				}
+				
+				LeaveCriticalSection(&_processQueryCs);
+			}
+			CloseHandle(p->hProcess);
+		}
+		
+		CloseHandle(p->hEvent);
+		delete p;
+		return 0;
+	}, params, 0, NULL);
+
+	if (hThread) {
+		CloseHandle(hThread);
+	} else {
+		CloseHandle(params->hEvent);
+		delete params;
 	}
-	
-	_exeName = _tcsrchr(_exePath, '\\');
-	if (_exeName == NULL)
-	{
-		_exeName = _exePath;
-	}
-	else
-	{
-		_exeName++; // Skip the backslash
-	}
-	
-	if (wcscmp(_exeName, _T("XoneKey64.exe")) == 0 ||
-		wcscmp(_exeName, _T("XoneKey32.exe")) == 0 ||
-		wcscmp(_exeName, _T("explorer.exe")) == 0)
-	{
-		LeaveCriticalSection(&_processQueryCs);
-		return _exeNameUtf8;
-	}
-	
-	int size_needed = WideCharToMultiByte(CP_UTF8, 0, _exeName, (int)lstrlen(_exeName), NULL, 0, NULL, NULL);
-	if (size_needed <= 0)
-	{
-		LeaveCriticalSection(&_processQueryCs);
-		return _unknownProgram;
-	}
-	
-	std::string strTo(size_needed, 0);
-	WideCharToMultiByte(CP_UTF8, 0, _exeName, (int)lstrlen(_exeName), &strTo[0], size_needed, NULL, NULL);
-	_exeNameUtf8 = strTo;
-	// LOG(L"%s\n", utf8ToWideString(_exeNameUtf8).c_str());
 	
 	LeaveCriticalSection(&_processQueryCs);
 	return _exeNameUtf8;
@@ -425,12 +387,12 @@ wstring XoneKeyHelper::getClipboardText(const int &type)
 	}
 }
 
-void XoneKeyHelper::setClipboardText(LPCTSTR data, const int &len, const int &type)
+bool XoneKeyHelper::setClipboardText(LPCTSTR data, const int &len, const int &type)
 {
 	if (!data || len <= 0)
 	{
 		LogError("Invalid data provided for clipboard");
-		return;
+		return false;
 	}
 
 	try
@@ -439,7 +401,7 @@ void XoneKeyHelper::setClipboardText(LPCTSTR data, const int &len, const int &ty
 		if (!hMem)
 		{
 			LogError("Failed to allocate memory for clipboard");
-			return;
+			return false;
 		}
 
 		void *pLock = GlobalLock(hMem);
@@ -447,7 +409,7 @@ void XoneKeyHelper::setClipboardText(LPCTSTR data, const int &len, const int &ty
 		{
 			GlobalFree(hMem);
 			LogError("Failed to lock memory for clipboard");
-			return;
+			return false;
 		}
 
 		memcpy(pLock, data, len * sizeof(WCHAR));
@@ -457,7 +419,7 @@ void XoneKeyHelper::setClipboardText(LPCTSTR data, const int &len, const int &ty
 		{
 			GlobalFree(hMem);
 			LogError("Failed to open clipboard for writing");
-			return;
+			return false;
 		}
 
 		EmptyClipboard();
@@ -468,10 +430,11 @@ void XoneKeyHelper::setClipboardText(LPCTSTR data, const int &len, const int &ty
 			std::stringstream ss;
 			ss << "Failed to set clipboard data: " << GetLastErrorAsString();
 			LogError(ss.str());
-			return;
+			return false;
 		}
 
 		CloseClipboard();
+		return true;
 	}
 	catch (const std::exception &e)
 	{
@@ -479,6 +442,7 @@ void XoneKeyHelper::setClipboardText(LPCTSTR data, const int &len, const int &ty
 		std::stringstream ss;
 		ss << "Exception setting clipboard: " << e.what();
 		LogError(ss.str());
+		return false;
 	}
 }
 

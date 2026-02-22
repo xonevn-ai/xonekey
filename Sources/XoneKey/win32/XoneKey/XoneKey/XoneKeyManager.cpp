@@ -12,6 +12,7 @@ You can fork, modify, improve this program. If you
 redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #include "XoneKeyManager.h"
+#include "XoneKeyHelper.h"
 #include <shlobj.h>
 
 static vector<LPCTSTR> _inputType = {

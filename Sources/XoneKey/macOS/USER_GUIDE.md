@@ -374,7 +374,7 @@ Chuyển đổi mã văn bản từ clipboard.
 
 2. **Reset Permissions:**
    - Quit XoneKey
-   - Terminal: `tccutil reset Accessibility com.xonevn.openkey`
+   - Terminal: `tccutil reset Accessibility com.xonevn.xonekey`
    - Mở lại XoneKey và cấp quyền
 
 ### Issue: Gõ không đúng
@@ -413,7 +413,7 @@ Chuyển đổi mã văn bản từ clipboard.
 
 2. **Reset Settings:**
    - Quit XoneKey
-   - Terminal: `defaults delete com.xonevn.openkey`
+   - Terminal: `defaults delete com.xonevn.xonekey`
    - Mở lại XoneKey
 
 3. **Reinstall:**

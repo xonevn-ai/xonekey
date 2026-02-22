@@ -39,8 +39,8 @@ redistribute your new version, it MUST be open source.
 #define POPUP_MACRO_TABLE 990
 
 #define POPUP_CONTROL_PANEL 1000
-#define POPUP_ABOUT_OPENKEY 1010
-#define POPUP_OPENKEY_EXIT 2000
+#define POPUP_ABOUT_XONEKEY 1010
+#define POPUP_XONEKEY_EXIT 2000
 
 #define MODIFY_MENU(MENU, COMMAND, DATA) ModifyMenu(MENU, COMMAND,                                     \
 													MF_BYCOMMAND | (DATA ? MF_CHECKED : MF_UNCHECKED), \
@@ -70,8 +70,8 @@ map<UINT, LPCTSTR> menuData = {
 	{POPUP_QUICK_CONVERT, _T("Chuyển mã nhanh")},
 	{POPUP_MACRO_TABLE, _T("Cấu hình gõ tắt...")},
 	{POPUP_CONTROL_PANEL, _T("Bảng điều khiển...")},
-	{POPUP_ABOUT_OPENKEY, _T("Giới thiệu XoneKey")},
-	{POPUP_OPENKEY_EXIT, _T("Thoát")},
+	{POPUP_ABOUT_XONEKEY, _T("Giới thiệu XoneKey")},
+	{POPUP_XONEKEY_EXIT, _T("Thoát")},
 };
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -189,10 +189,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			case POPUP_CONTROL_PANEL:
 				AppDelegate::getInstance()->onControlPanel();
 				break;
-			case POPUP_ABOUT_OPENKEY:
+			case POPUP_ABOUT_XONEKEY:
 				AppDelegate::getInstance()->onXoneKeyAbout();
 				break;
-			case POPUP_OPENKEY_EXIT:
+			case POPUP_XONEKEY_EXIT:
 				AppDelegate::getInstance()->onXoneKeyExit();
 				break;
 			}
@@ -273,9 +273,9 @@ void SystemTrayHelper::createPopupMenu()
 	AppendMenu(popupMenu, MF_SEPARATOR, 0, 0);
 
 	AppendMenu(popupMenu, MF_STRING, POPUP_CONTROL_PANEL, menuData[POPUP_CONTROL_PANEL]);
-	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_ABOUT_OPENKEY, menuData[POPUP_ABOUT_OPENKEY]);
+	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_ABOUT_XONEKEY, menuData[POPUP_ABOUT_XONEKEY]);
 	AppendMenu(popupMenu, MF_SEPARATOR, 0, 0);
-	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_OPENKEY_EXIT, menuData[POPUP_OPENKEY_EXIT]);
+	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_XONEKEY_EXIT, menuData[POPUP_XONEKEY_EXIT]);
 
 	SetMenuDefaultItem(popupMenu, POPUP_CONTROL_PANEL, false);
 }

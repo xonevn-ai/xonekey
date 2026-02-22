@@ -1,12 +1,12 @@
 //
 // linux.h
-// Created by Daniel Do on 8/21/19.
+// Created by Daniel Do on 8/21/25.
 // Copyright (c) 2025 Daniel Do. All rights reserved.
 //
 
 
-#ifndef OPENKEY_LINUX_H
-#define OPENKEY_LINUX_H
+#ifndef XONEKEY_LINUX_H
+#define XONEKEY_LINUX_H
 
 //define Key code for Linux keyboard
 #define KEY_ESC                                 9
@@ -75,4 +75,4 @@
 #define KEY_COMMA                               59
 #define KEY_SLASH                               61
 
-#endif //OPENKEY_LINUX_H
+#endif //XONEKEY_LINUX_H

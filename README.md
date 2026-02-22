@@ -10,12 +10,12 @@ Bộ gõ tiếng Việt mới cho macOS, sử dụng kỹ thuật `Backspace`. L
 
 ### Lưu ý, khi sử dụng XoneKey, bạn nên tắt hẳn bộ gõ khác vì 2 chương trình bộ gõ sẽ xung đột nhau, dẫn đến thao tác không chính xác.
 
-![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-main-control.png "Main UI")
-![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-main-control-2.png "Main UI")
-![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-main-control-3.png "Main UI")
-![Menu](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-small-control.png "Menu bar")
-![Gõ tắt](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-macro.png "Macro")
-![Chuyển mã](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-convert-tool.png "ConvertTool")
+![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-main-control.png "Main UI")
+![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-main-control-2.png "Main UI")
+![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-main-control-3.png "Main UI")
+![Menu](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-small-control.png "Menu bar")
+![Gõ tắt](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-macro.png "Macro")
+![Chuyển mã](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-convert-tool.png "ConvertTool")
 
 ## Hỗ trợ kiểu gõ
 - Telex
@@ -71,21 +71,21 @@ $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/inst
 
 Kiểm tra phiên bản XoneKey:
 ```
-$ brew info --cask openkey
+$ brew info --cask xonekey
 ```
 Gõ lệnh sau để homebrew tự cài XoneKey cho bạn:
 ```
-$ brew install --cask openkey
+$ brew install --cask xonekey
 ```
 
 Để update phiên bản mới nhất của XoneKey
 ```
-$ brew upgrade --cask openkey
+$ brew upgrade --cask xonekey
 ```
 
 ## Note - Lưu ý:
 XoneKey cần cấp quyền, vào *System Preferences -> Security & Privacy -> Accessibility*, kích hoạt `XoneKey.app`. **Không tắt nó khi đang dùng XoneKey**.
-![Guide](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-guide.png "Accessibility").
+![Guide](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-guide.png "Accessibility").
 
 ## Tác giả
 - Đỗ Tiến Điệp.
@@ -97,9 +97,9 @@ XoneKey cần cấp quyền, vào *System Preferences -> Security & Privacy -> A
 - [XoneKey cho Linux (đang phát triển)](https://github.com/xonevn-ai/xonekey/tree/master/Sources/XoneKey/linux)
 ## Một điều nhỏ nhoi
 Đừng quên ủng hộ tác giả bằng cách mua ly cafe cho tác giả tỉnh ngủ nhé:  
-[Buy me a coffee ^^](https://vituocgia.github.io/donate.html)  
-[Redbull cũng được ^^](https://paypal.me/tuyenmai)  
+[Buy me a coffee ^^](https://xonevn-ai.github.io/donate.html)  
+[Redbull cũng được ^^](https://paypal.me/thegioivatdung)  
 Hoặc trực tiếp qua ví momo:   
-![Donate by momo](https://vituocgia.github.io/images/momo.png "Momo").   
+![Donate by momo](https://xonevn-ai.github.io/images/momo.png "Momo").   
 
 Cảm ơn các bạn rất nhiều.

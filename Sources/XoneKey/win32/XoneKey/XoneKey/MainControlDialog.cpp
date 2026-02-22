@@ -11,8 +11,12 @@ which is released under GPL license.
 You can fork, modify, improve this program. If you
 redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
+#include "stdafx.h"
 #include "MainControlDialog.h"
 #include "AppDelegate.h"
+#include "XoneKeyHelper.h"
+#include "XoneKeyManager.h"
+#include "SystemTrayHelper.h"
 #include "ToastNotification.h"
 #include <Shlobj.h>
 #include <Uxtheme.h>
@@ -147,7 +151,7 @@ void MainControlDialog::initDialog() {
     createToolTip(checkAllowOtherLanguages, IDS_STRING_OTHER_LANGUAGES);
 
     checkTempOffXoneKey = GetDlgItem(hTabPage1, IDC_CHECK_TEMP_OFF_OPEN_KEY);
-    createToolTip(checkTempOffXoneKey, IDS_STRING_TEMP_OFF_OPENKEY);
+    createToolTip(checkTempOffXoneKey, IDS_STRING_TEMP_OFF_XONEKEY);
 
     /*------------end tab 1----------------*/
 

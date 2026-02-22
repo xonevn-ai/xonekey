@@ -17,7 +17,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     NSArray* runningApp = [[NSWorkspace sharedWorkspace] runningApplications];
-    if (![runningApp containsObject:@"com.xonevn.openkey"]) {
+    if (![runningApp containsObject:@"com.xonevn.xonekey"]) {
         NSString* path = [[NSBundle mainBundle] bundlePath];
         for (int i = 0; i < 4; i++)
             path = [path stringByDeletingLastPathComponent];

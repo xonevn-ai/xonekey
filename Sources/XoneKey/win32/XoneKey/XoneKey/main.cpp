@@ -13,6 +13,7 @@ redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #include "stdafx.h"
 #include "AppDelegate.h"
+#include "XoneKeyHelper.h"
 #include <Shlobj.h>
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,

@@ -53,7 +53,7 @@ INT_PTR CALLBACK MainDialogProcess(HWND hDlg, UINT message, WPARAM wParam, LPARA
     UNREFERENCED_PARAMETER(lParam);
 	switch (message) {
 	case WM_INITDIALOG:{
-		HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_OPENKEYUPDATE));
+		HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_XONEKEYUPDATE));
 		if (hIcon) {
 			SendMessage(hDlg, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
 		}

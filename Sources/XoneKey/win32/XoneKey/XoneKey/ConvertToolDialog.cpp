@@ -11,9 +11,12 @@ which is released under GPL license.
 You can fork, modify, improve this program. If you
 redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
-#include "ConvertToolDialog.h"
 #include "stdafx.h"
+#include "ConvertToolDialog.h"
 #include "AppDelegate.h"
+#include "XoneKeyHelper.h"
+#include "XoneKeyManager.h"
+#include "SystemTrayHelper.h"
 
 static Uint16 _lastKeyCode;
 

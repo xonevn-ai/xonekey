@@ -1,12 +1,12 @@
 //
 // win32.h
-// Created by Daniel Do on 9/10/19.
+// Created by Daniel Do on 9/10/25.
 // Copyright (c) 2025 Daniel Do. All rights reserved.
 //
 
 
-#ifndef OPENKEY_WIN32_H
-#define OPENKEY_WIN32_H
+#ifndef XONEKEY_WIN32_H
+#define XONEKEY_WIN32_H
 #include <windows.h>
 
 //define Key code for Windows keyboard
@@ -76,4 +76,4 @@
 #define KEY_COMMA                               VK_OEM_COMMA
 #define KEY_SLASH                               191
 
-#endif //OPENKEY_WIN32_H
+#endif //XONEKEY_WIN32_H

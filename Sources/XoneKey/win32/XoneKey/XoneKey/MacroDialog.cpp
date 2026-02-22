@@ -11,9 +11,11 @@ which is released under GPL license.
 You can fork, modify, improve this program. If you
 redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
-#include "MacroDialog.h"
 #include "stdafx.h"
+#include "MacroDialog.h"
 #include "AppDelegate.h"
+#include "XoneKeyHelper.h"
+#include "XoneKeyManager.h"
 #include <commdlg.h>
 
 #define MAX_MACRO_BUFFER 4096

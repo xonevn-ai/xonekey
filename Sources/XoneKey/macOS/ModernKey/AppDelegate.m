@@ -120,7 +120,7 @@ extern bool convertToolDontAlertWhenCompleted;
     
     //check whether this app has been launched before that or not
     NSArray* runningApp = [[NSWorkspace sharedWorkspace] runningApplications];
-    if ([runningApp containsObject:OPENKEY_BUNDLE]) { //if already running -> exit
+    if ([runningApp containsObject:XONEKEY_BUNDLE]) { //if already running -> exit
         [NSApp terminate:nil];
         return;
     }

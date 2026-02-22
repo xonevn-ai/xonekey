@@ -15,20 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Settings profiles
 - Enhanced macro system with templates
 
-## [2.0.0] - 2025-11-25
+## [1.0.2] - 2026-02-22
 
-### 🎉 Major Release - Stability & Quality Improvements
+### 🎉 Stability & Performance Release
 
-This release focuses on improving stability, performance, and code quality across all platforms.
+This release focuses on significant stability improvements, performance optimizations, and code robustness for the XoneKey application.
 
 ### Added
 
 #### Windows Platform
-- **Application Health Monitoring**
-  - Heartbeat timer system (30-second intervals)
-  - Watchdog mechanism to detect unresponsive application
-  - Automatic health issue logging
-  - Uptime tracking
+- **Thread-Based Application Health Monitoring**
+  - Completely refactored health monitor to use a dedicated background thread.
+  - Watchdog mechanism that detects main thread freezes without blocking the UI.
+  - Automatic recovery logic that attempts to re-initialize engine hooks if a hang is detected.
 
 - **Performance Profiling and Logging**
   - Comprehensive logging system with multiple log levels (DEBUG, INFO, WARNING, ERROR)
@@ -277,8 +276,8 @@ Special thanks to all contributors who helped improve XoneKey!
 
 ---
 
-[Unreleased]: https://github.com/xonevn-ai/xonekey/compare/v2.0.0...HEAD
-[2.0.0]: https://github.com/xonevn-ai/xonekey/compare/v1.0.1...v2.0.0
+[Unreleased]: https://github.com/xonevn-ai/xonekey/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/xonevn-ai/xonekey/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/xonevn-ai/xonekey/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/xonevn-ai/xonekey/releases/tag/v1.0.0
 

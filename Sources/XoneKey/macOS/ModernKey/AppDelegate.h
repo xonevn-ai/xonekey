@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "ViewController.h"
 
-#define OPENKEY_BUNDLE @"com.xonevn.openkey"
+#define XONEKEY_BUNDLE @"com.xonevn.xonekey"
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 

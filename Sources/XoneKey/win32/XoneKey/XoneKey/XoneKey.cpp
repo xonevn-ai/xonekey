@@ -14,6 +14,9 @@ redistribute your new version, it MUST be open source.
 #include "stdafx.h"
 #include "AppDelegate.h"
 #include "PerformanceLogger.h"
+#include "XoneKeyHelper.h"
+#include "XoneKeyManager.h"
+#include <imm.h>
 
 #pragma comment(lib, "imm32")
 #define IMC_GETOPENSTATUS 0x0005
@@ -70,12 +73,17 @@ static DWORD _lastWindowEventTime = 0;
 static const DWORD WINDOW_EVENT_THROTTLE_MS = 100; // Minimum 100ms between window events
 static CRITICAL_SECTION _windowEventCs;
 
+// IME window caching
+static HWND _hCachedIMEWnd = NULL;
+static HWND _hCachedForegroundWnd = NULL;
+
 static INPUT backspaceEvent[2];
 static INPUT keyEvent[2];
 
 LRESULT CALLBACK keyboardHookProcess(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK mouseHookProcess(int nCode, WPARAM wParam, LPARAM lParam);
 VOID CALLBACK winEventProcCallback(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime);
+void SendPureCharacter(const Uint16& ch);
 
 void XoneKeyFree() {
 	UnhookWindowsHookEx(hMouseHook);
@@ -382,10 +390,27 @@ static void SendNewCharString(const bool& dataFromMacro = false) {
 		startNewSession();
 	}
 
-	XoneKeyHelper::setClipboardText((LPCTSTR)_newCharString.data(), _newCharSize + 1, CF_UNICODETEXT);
+	// Try multiple times to set clipboard text if it fails
+	// Clipboard can be locked by other applications (like clipboard managers)
+	int retryCount = 0;
+	bool success = false;
+	while (retryCount < 3 && !success) {
+		success = XoneKeyHelper::setClipboardText((LPCTSTR)_newCharString.data(), _newCharSize + 1, CF_UNICODETEXT);
+		if (!success) {
+			retryCount++;
+			Sleep(1); // Short wait before retry
+		}
+	}
 
-	//Send shift + insert
-	SendCombineKey(KEY_LEFT_SHIFT, VK_INSERT, 0, KEYEVENTF_EXTENDEDKEY);
+	if (success) {
+		//Send shift + insert
+		SendCombineKey(KEY_LEFT_SHIFT, VK_INSERT, 0, KEYEVENTF_EXTENDEDKEY);
+	} else {
+		// Fallback to step-by-step typing if clipboard fails
+		for (int i = 0; i < _newCharSize; i++) {
+			SendPureCharacter(_newCharString[i]);
+		}
+	}
 	
 	//the case when hCode is vRestore or vRestoreAndStartNewSession,
 	//the word is invalid and last key is control key such as TAB, LEFT ARROW, RIGHT ARROW,...
@@ -504,6 +529,8 @@ static bool UnsetModifierMask(const Uint16& vkCode) {
 }
 
 LRESULT CALLBACK keyboardHookProcess(int nCode, WPARAM wParam, LPARAM lParam) {
+	if (nCode < 0) return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
+
 	keyboardData = (KBDLLHOOKSTRUCT *)lParam;
 	//ignore my event
 	if (keyboardData->dwExtraInfo != 0) {
@@ -512,10 +539,16 @@ LRESULT CALLBACK keyboardHookProcess(int nCode, WPARAM wParam, LPARAM lParam) {
 	
 	//ignore if IME pad is open when typing Japanese/Chinese...
 	HWND hWnd = GetForegroundWindow();
-	HWND hIME = ImmGetDefaultIMEWnd(hWnd);
-	LRESULT isImeON = SendMessage(hIME, WM_IME_CONTROL, IMC_GETOPENSTATUS, 0);
-	if (isImeON) {
-		return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
+	if (hWnd != _hCachedForegroundWnd) {
+		_hCachedForegroundWnd = hWnd;
+		_hCachedIMEWnd = ImmGetDefaultIMEWnd(hWnd);
+	}
+
+	if (_hCachedIMEWnd) {
+		LRESULT isImeON = SendMessage(_hCachedIMEWnd, WM_IME_CONTROL, IMC_GETOPENSTATUS, 0);
+		if (isImeON) {
+			return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
+		}
 	}
 	
 	//check modifier key

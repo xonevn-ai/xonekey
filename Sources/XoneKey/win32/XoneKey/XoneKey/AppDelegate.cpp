@@ -15,6 +15,13 @@ redistribute your new version, it MUST be open source.
 #include "ToastNotification.h"
 #include "ApplicationHealthMonitor.h"
 #include "PerformanceLogger.h"
+#include "XoneKeyManager.h"
+#include "XoneKeyHelper.h"
+#include "SystemTrayHelper.h"
+#include "MainControlDialog.h"
+#include "MacroDialog.h"
+#include "ConvertToolDialog.h"
+#include "AboutDialog.h"
 
 static AppDelegate* _instance;
 
