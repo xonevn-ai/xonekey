@@ -46,18 +46,29 @@ jobs:
         $x64ReleaseDir = "Sources/XoneKey/win32/XoneKey/x64/Release"
         $ZipPath = "XoneKey-${{ env.RELEASE_VERSION }}.zip"
         
-        # Create flat output
+        # Create flat output folder
+        if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
         New-Item -ItemType Directory -Path "dist" -Force
         
-        if (Test-Path "$ReleaseDir/XoneKey.exe") {
-            Copy-Item -Path "$ReleaseDir/XoneKey.exe" -Destination "dist/XoneKey32.exe"
-            Copy-Item -Path "$ReleaseDir/XoneKeyUpdate.exe" -Destination "dist/XoneKeyUpdate.exe"
+        # Copy binaries to dist with correct names
+        if (Test-Path "$ReleaseDir/XoneKey32.exe") {
+            Copy-Item -Path "$ReleaseDir/XoneKey32.exe" -Destination "dist/XoneKey32.exe"
+            Copy-Item -Path "$ReleaseDir/XoneKeyUpdater.exe" -Destination "dist/XoneKeyUpdate.exe"
         }
-        if (Test-Path "$x64ReleaseDir/XoneKey.exe") {
-            Copy-Item -Path "$x64ReleaseDir/XoneKey.exe" -Destination "dist/XoneKey64.exe"
+        if (Test-Path "$x64ReleaseDir/XoneKey64.exe") {
+            Copy-Item -Path "$x64ReleaseDir/XoneKey64.exe" -Destination "dist/XoneKey64.exe"
         }
         
-        Compress-Archive -Path "dist/*" -DestinationPath $ZipPath
+        # Zip using 7z (available on GH runners)
+        7z a -tzip "$ZipPath" ./dist/*
+        
+        # Verify zip exists
+        if (Test-Path $ZipPath) {
+            Write-Host "Successfully created $ZipPath"
+        } else {
+            Write-Error "Failed to create $ZipPath"
+            exit 1
+        }
 
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/v')

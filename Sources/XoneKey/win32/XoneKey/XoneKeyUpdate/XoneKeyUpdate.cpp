@@ -120,6 +120,7 @@ DWORD WINAPI UpdateThreadFunction(LPVOID lpParam) {
 		// Move both versions if they exist
 		MoveFile(L"_XoneKeyUpdate\\XoneKey64.exe", L"XoneKey64.exe");
 		MoveFile(L"_XoneKeyUpdate\\XoneKey32.exe", L"XoneKey32.exe");
+		MoveFile(L"_XoneKeyUpdate\\XoneKeyUpdate.exe", L"XoneKeyUpdate.exe");
 
 		DeleteFile(path); // _XoneKeyUpdate.zip
 		DeleteFile(L"_XoneKeyUpdate\\XoneKeyUpdate.exe");
