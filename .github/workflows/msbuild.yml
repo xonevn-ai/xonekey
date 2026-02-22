@@ -44,7 +44,7 @@ jobs:
       run: |
         $ReleaseDir = "Sources/XoneKey/win32/XoneKey/Release"
         $x64ReleaseDir = "Sources/XoneKey/win32/XoneKey/x64/Release"
-        $ZipPath = "XoneKey-${{ env.RELEASE_VERSION }}.zip"
+        $ZipPath = "XoneKey-Build.zip"
         
         # Create structured output
         New-Item -ItemType Directory -Path "dist/x86" -Force

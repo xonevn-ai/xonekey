@@ -250,69 +250,34 @@ string &XoneKeyHelper::getFrontMostAppExecuteName()
 		return _exeNameUtf8;
 	}
 	
-	// Start async update if process changed, but don't wait for it
-	_cacheProcessId = _tempProcessId;
-	
-	ProcessQueryParams* params = new ProcessQueryParams();
-	params->processId = _tempProcessId;
-	params->hProcess = NULL;
-	params->success = false;
-	params->hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	
-	if (params->hEvent == NULL)
-	{
-		delete params;
-		LeaveCriticalSection(&_processQueryCs);
-		return _exeNameUtf8;
+	// Query the process name synchronously
+	_proc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, _tempProcessId);
+	if (_proc == NULL) {
+		_proc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, _tempProcessId);
 	}
 	
-	HANDLE hThread = CreateThread(NULL, 0, [](LPVOID lpParam) -> DWORD {
-		ProcessQueryParams* p = (ProcessQueryParams*)lpParam;
-		
-		// Try to query the process name
-		p->hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, p->processId);
-		if (p->hProcess == NULL) {
-			p->hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, p->processId);
-		}
-		
-		if (p->hProcess != NULL) {
-			TCHAR path[1024];
-			if (GetProcessImageFileName(p->hProcess, path, 1024) != 0) {
-				TCHAR* name = _tcsrchr(path, '\\');
-				if (name == NULL) name = path;
-				else name++;
+	if (_proc != NULL) {
+		TCHAR path[1024];
+		if (GetProcessImageFileName(_proc, path, 1024) != 0) {
+			TCHAR* name = _tcsrchr(path, '\\');
+			if (name == NULL) name = path;
+			else name++;
 
-				InitializeProcessQueryCs();
-				EnterCriticalSection(&_processQueryCs);
+			// Update the global cache
+			int size_needed = WideCharToMultiByte(CP_UTF8, 0, name, (int)lstrlen(name), NULL, 0, NULL, NULL);
+			if (size_needed > 0) {
+				std::string strTo(size_needed, 0);
+				WideCharToMultiByte(CP_UTF8, 0, name, (int)lstrlen(name), &strTo[0], size_needed, NULL, NULL);
 				
-				// Update the global cache
-				int size_needed = WideCharToMultiByte(CP_UTF8, 0, name, (int)lstrlen(name), NULL, 0, NULL, NULL);
-				if (size_needed > 0) {
-					std::string strTo(size_needed, 0);
-					WideCharToMultiByte(CP_UTF8, 0, name, (int)lstrlen(name), &strTo[0], size_needed, NULL, NULL);
-					
-					if (strTo != "XoneKey64.exe" && strTo != "XoneKey32.exe" && strTo != "explorer.exe") {
-						_exeNameUtf8 = strTo;
-					}
+				if (strTo != "XoneKey64.exe" && strTo != "XoneKey32.exe" && strTo != "explorer.exe") {
+					_exeNameUtf8 = strTo;
 				}
-				
-				LeaveCriticalSection(&_processQueryCs);
 			}
-			CloseHandle(p->hProcess);
 		}
-		
-		CloseHandle(p->hEvent);
-		delete p;
-		return 0;
-	}, params, 0, NULL);
-
-	if (hThread) {
-		CloseHandle(hThread);
-	} else {
-		CloseHandle(params->hEvent);
-		delete params;
+		CloseHandle(_proc);
 	}
 	
+	_cacheProcessId = _tempProcessId;
 	LeaveCriticalSection(&_processQueryCs);
 	return _exeNameUtf8;
 }

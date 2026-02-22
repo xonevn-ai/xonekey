@@ -102,8 +102,7 @@ DWORD WINAPI UpdateThreadFunction(LPVOID lpParam) {
 	
 	//download zip file
 	WCHAR updateUrl[MAX_PATH];
-	wsprintf(updateUrl, TEXT("https://github.com/xonevn-ai/xonekey/releases/download/%s/XoneKey%s-Windows.zip"),
-		versionName.c_str(),
+	wsprintf(updateUrl, TEXT("https://github.com/xonevn-ai/xonekey/releases/download/%s/XoneKey-Build.zip"),
 		versionName.c_str());
 	wsprintf(path, TEXT("%s\\_XoneKeyUpdate.zip"), currentDir);
 	res = URLDownloadToFile(NULL, updateUrl, path, 0, NULL);
