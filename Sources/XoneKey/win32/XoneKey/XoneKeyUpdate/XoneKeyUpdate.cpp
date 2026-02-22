@@ -102,26 +102,34 @@ DWORD WINAPI UpdateThreadFunction(LPVOID lpParam) {
 	
 	//download zip file
 	WCHAR updateUrl[MAX_PATH];
-	wsprintf(updateUrl, TEXT("https://github.com/xonevn-ai/xonekey/releases/download/%s/XoneKey-Build.zip"),
+	wsprintf(updateUrl, TEXT("https://github.com/xonevn-ai/xonekey/releases/download/v%s/XoneKey-v%s.zip"),
+		versionName.c_str(),
 		versionName.c_str());
 	wsprintf(path, TEXT("%s\\_XoneKeyUpdate.zip"), currentDir);
 	res = URLDownloadToFile(NULL, updateUrl, path, 0, NULL);
 
 	if (res == S_OK) {
-		//remove old file
+		// remove old files
 		DeleteFile(L"XoneKey64.exe");
-		//extract zip file
-		WinExec("powershell.exe -NoP -NonI -Command \"Expand-Archive '.\\_XoneKeyUpdate.zip' '.\\_XoneKeyUpdate'\" ", SW_HIDE);
-		Sleep(5000);
+		DeleteFile(L"XoneKey32.exe");
+
+		// extract zip file
+		WinExec("powershell.exe -NoP -NonI -Command \"Expand-Archive -Path '.\\_XoneKeyUpdate.zip' -DestinationPath '.\\_XoneKeyUpdate' -Force\" ", SW_HIDE);
+		Sleep(8000); // Increased time for extraction
+
+		// Move both versions if they exist
 		MoveFile(L"_XoneKeyUpdate\\XoneKey64.exe", L"XoneKey64.exe");
-		DeleteFile(path);
+		MoveFile(L"_XoneKeyUpdate\\XoneKey32.exe", L"XoneKey32.exe");
+
+		DeleteFile(path); // _XoneKeyUpdate.zip
 		DeleteFile(L"_XoneKeyUpdate\\XoneKeyUpdate.exe");
 		DeleteFile(L"_XoneKeyUpdate\\XoneKey64.exe");
 		DeleteFile(L"_XoneKeyUpdate\\XoneKey32.exe");
 		RemoveDirectory(L".\\_XoneKeyUpdate");
 		MessageBox(hDlg, _T("Bạn đã cập nhật XoneKey bản mới nhất thành công!"), _T("XoneKey Update"), MB_OK);
 		ExitProcess(0);
-	} else {
+	}
+ else {
 		MessageBox(hDlg, _T("Có lỗi trong quá trình cập nhật, vui lòng thử lại sau!"), _T("XoneKey Update"), MB_OK);
 		ExitProcess(0);
 	}

@@ -44,19 +44,17 @@ jobs:
       run: |
         $ReleaseDir = "Sources/XoneKey/win32/XoneKey/Release"
         $x64ReleaseDir = "Sources/XoneKey/win32/XoneKey/x64/Release"
-        $ZipPath = "XoneKey-Build.zip"
+        $ZipPath = "XoneKey-${{ env.RELEASE_VERSION }}.zip"
         
-        # Create structured output
-        New-Item -ItemType Directory -Path "dist/x86" -Force
-        New-Item -ItemType Directory -Path "dist/x64" -Force
+        # Create flat output
+        New-Item -ItemType Directory -Path "dist" -Force
         
         if (Test-Path "$ReleaseDir/XoneKey.exe") {
-            Copy-Item -Path "$ReleaseDir/XoneKey.exe" -Destination "dist/x86/"
-            Copy-Item -Path "$ReleaseDir/XoneKeyUpdate.exe" -Destination "dist/x86/"
+            Copy-Item -Path "$ReleaseDir/XoneKey.exe" -Destination "dist/XoneKey32.exe"
+            Copy-Item -Path "$ReleaseDir/XoneKeyUpdate.exe" -Destination "dist/XoneKeyUpdate.exe"
         }
         if (Test-Path "$x64ReleaseDir/XoneKey.exe") {
-            Copy-Item -Path "$x64ReleaseDir/XoneKey.exe" -Destination "dist/x64/"
-            Copy-Item -Path "$x64ReleaseDir/XoneKeyUpdate.exe" -Destination "dist/x64/"
+            Copy-Item -Path "$x64ReleaseDir/XoneKey.exe" -Destination "dist/XoneKey64.exe"
         }
         
         Compress-Archive -Path "dist/*" -DestinationPath $ZipPath
