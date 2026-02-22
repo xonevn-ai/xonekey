@@ -6,7 +6,7 @@
 
 **XoneKey** is a modern, high-performance, and open-source Vietnamese input application for Windows, macOS, and Linux. It aims to provide a seamless typing experience while eliminating common issues like the underline bug on macOS and lag on Windows.
 
-## 🚀 Key Features (v1.0.2)
+## 🚀 Key Features (v1.0.4)
 
 -   **High Performance**: Minimal lag and low resource consumption.
 -   **Stability Watchdog**: (Windows) Dedicated background thread monitors health and automatically recovers from hangs.
