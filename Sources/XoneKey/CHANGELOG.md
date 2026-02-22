@@ -241,7 +241,7 @@ This release focuses on significant stability improvements, performance optimiza
 
 ## Release Notes
 
-### Version 2.0.0 Highlights
+### Version 1.0.2 Highlights
 
 This is a major stability and quality release. Key improvements include:
 

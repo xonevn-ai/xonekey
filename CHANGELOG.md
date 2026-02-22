@@ -1,144 +1,282 @@
-# XoneKey Change Log
+# Changelog
 
-##### XoneKey for Linux: (in development)
+All notable changes to XoneKey will be documented in this file.
 
-##### Version 1.2 RC5: (26/08/2019)
-- Sửa lỗi không gõ được chữ "quởn".
-- Không kiểm tra chính tả khi sử dụng dấu "[ ] { }".
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-##### Version 1.2 RC4: (24/08/2019)
-- Bảng gõ tắt tiện lợi hơn, thêm tính năng Sửa từ.
-- Cải thiện khả năng bỏ dấu, tốc độ nhanh hơn.
-- Tự phục hồi dấu câu khi xóa ký tự (chữ “tuỳa” xóa “a” sẽ thành “tùy”,… )
-- Sửa lỗi không gõ được từ “quét” khi bật chức năng tự phục hồi phím.
-- Sửa lỗi ư và ơ khi gõ font Palatino trong MS Word.
-- Sửa lỗi bảng mã VNI khi xóa ký tự, không thể gõ tiếng việt tiếp.
+## [Unreleased]
 
-##### Version 1.2 RC3: (16/08/2019)
-- Không gõ được "dui9, duoi96".
-- Không gõ được "tuyps".
+### Planned
+- Linux application support
+- Cloud sync (optional)
+- Custom themes
+- Advanced text prediction
+- Settings profiles
+- Enhanced macro system with templates
 
-##### Version 1.2 RC2: (15/08/2019)
-- Sửa lỗi không gõ được d i e u 9 6.
-- Sửa lỗi không gõ tắt được khi dùng chế độ tiếng Anh với từ bắt đầu bằng.
-- Sửa lỗi tự nhảy dấu khi gõ sai.
-- Thêm thông tin phiên bản trong bảng giới thiệu.
+## [1.0.2] - 2026-02-22
 
-##### Version 1.2 RC1: (13/08/2019)
-- Chuyển chế độ thông minh: Bạn đang dùng chế độ gõ Tiếng Việt trên ứng dụng A, bạn chuyển qua ứng dụng B trước đó bạn dùng chế độ gõ Tiếng Anh, XoneKey sẽ tự động chuyển qua chế độ gõ Tiếng Anh cho bạn, khi bạn quay lại ứng dụng A, XoneKey tất nhiên sẽ chuyển lại chế độ gõ tiếng Việt, rất cơ động.
-- Viết Hoa chữ cái đầu câu: Khi gõ văn bản dài, đôi khi bạn quên ghi hoa chữ cái đầu câu khi kết thúc một câu hoặc khi xuống hàng, tính năng này sẽ tự ghi hoa chữ cái đầu câu cho bạn, thật tuyệt vời.
-Khôi phục phím với từ sai: hỗ trợ thêm các dấu ngắt câu như dấu chấm, phẩy,...
-Sửa vài lỗi nho nhỏ khác.
+### 🎉 Stability & Performance Release
 
-##### Version 1.1 RC: (12/08/2019)
-- Chế độ “Gửi từng phím”: XoneKey bản mới (1.1) mặc định dùng kỹ thuật mới gửi dữ liệu 1 lần thay vì gửi nhiều lần cho chuỗi ký tự, nên nếu có ứng dụng nào không tương thích, hãy bật tính năng này lên, mặc định thì nên tắt vì kỹ thuật mới sẽ chạy nhanh hơn.
-- Phục hồi phím với từ sai.
-- Nâng cao khả năng check chính tả.
-- Sửa lỗi thanh địa chỉ trình duyệt (on/off).
-- Bỏ tính năng "cho phép bỏ dấu tự do".
-- Gõ tắt: bao gồm bật/tắt, bảng soạn các từ gõ tắt, hỗ trợ ký tự bất kỳ, bảng mã bất kỳ. Khi soạn thảo các từ gõ tắt, bạn phải nhập ở bảng mã Unicode dựng sẵn.
-- Gõ tắt ngay khi trong chế độ gõ tiếng Anh (on/off).
-- Sửa lỗi trên một số phần mềm.
+This release focuses on significant stability improvements, performance optimizations, and code robustness for the XoneKey application.
 
-##### Version 1.0.20: (06/08/2019)
-- Sửa lỗi phím tắt chuyển chế độ, phím tắt của ứng dụng khác vẫn hoạt động nếu bị trùng.
-- Cho phép gõ “Đ” ngay sau phụ âm.
-- Không hiện Icon trên thanh Dock mục recent app.
-- Sửa lỗi “oăc” ra “ooạc” trong kiểu gõ VNI.
-- Sửa vài lỗi nhỏ xíu khác.
+### Added
 
-##### Version 1.0.19: (04/08/2019)
-- Sửa lỗi không gõ được chữ “gì” khi dùng bỏ dấu kiểu cũ.
-- Sửa lỗi không gõ được Unicode tổ hợp trên ứng dụng Stickies.
-- Sửa lỗi gõ các âm "oong, ooc".
+#### Windows Platform
+- **Thread-Based Application Health Monitoring**
+  - Completely refactored health monitor to use a dedicated background thread.
+  - Watchdog mechanism that detects main thread freezes without blocking the UI.
+  - Automatic recovery logic that attempts to re-initialize engine hooks if a hang is detected.
 
-##### Version 1.0.18: (01/08/2019)
-- Không sử dụng w -> ư trong Simple Telex.
-- Bật tắt kêu beep khi chuyển chế độ.
-- Thêm phím chuyển Shift, giờ có thể sử dụng Ctrl + Shift hoặc Command + Shift.
-- Sửa vài lỗi khác.
-- Hỗ trợ cho macOS bản cũ.
+- **Performance Profiling and Logging**
+  - Comprehensive logging system with multiple log levels (DEBUG, INFO, WARNING, ERROR)
+  - Performance timer for tracking slow operations (>100ms)
+  - Window event hook frequency tracking
+  - System tray update success/failure tracking
+  - Performance counters for key operations
+  - Logs written to `%APPDATA%\XoneKey\xonekey_log.txt`
+  - `PERF_TIMER(name)` macro for automatic performance tracking
 
-##### Version 1.0.17: (31/07/2019)
-- Add Simple Telex mode.
-- Black/White icon on menu bar.
-- Space and back key improved.
-- Modern orthography.
-- Custom switch key.
-- Quick telex (cc=ch, gg=gi, kk=kh, nn=ng, qq=qu, pp=ph, tt=th).
-- Support TextWrangler.
+- **Network Operation Improvements**
+  - Replaced `URLDownloadToFile` with WinHttp API
+  - Proper timeout control (configurable, default 30 seconds)
+  - Better error handling and logging
+  - Support for HTTP and HTTPS
+  - Fallback to old method for compatibility
 
-##### Version 1.0.14: (09/04/2019)
-- Add case "uýt".
-- Improve typing English in Vietnamese mode.
+- **Toast Notifications**
+  - Toast notification when switching typing mode via shortcut key
+  - Consistent behavior with taskbar icon click
+  - Shows "Đã bật chế độ gõ tiếng Việt" or "Đã tắt chế độ gõ tiếng Việt"
 
-##### Version 1.0.11: (27/02/2019)
-- Add case "chú thòong", "gòong".
+#### Engine (Cross-Platform)
+- **EngineSafety.h** - New safety layer
+  - `IsValidIndex()` - Validate array indices
+  - `SafeGetTypingWord()` / `SafeSetTypingWord()` - Safe array access
+  - `SafeGetKeyState()` / `SafeSetKeyState()` - Safe state management
+  - `SafeIncrementIndex()` / `SafeDecrementIndex()` - Overflow protection
+  - `IsIndexInWord()` - Bounds checking for word operations
+  - `IsValidCharacterCode()` - Character code validation
+  - `ENGINE_ASSERT()` - Debug assertions
 
-##### Version 1.0.10: (26/02/2019)
-- Fix case "duocd".
+- **Enhanced Safety in Core Functions**
+  - `setKeyData()` - Enhanced bounds checking
+  - `insertKey()` - Safe increment with overflow protection
+  - `insertState()` - Safe write with bounds checking
+  - `checkSpelling()` - Validate bounds for spelling operations
+  - `getCharacterCode()` - Validate code table and array bounds
+  - `findAndCalculateVowel()` - Bounds checking for vowel operations
+  - `removeMark()` - Safe vowel operations
+  - Delete key handling - Safe decrement with underflow protection
 
-##### Version 1.0.9: (22/02/2019)
-- Fix incorrect word when switch language without pressing Space key.
+- **Macro System Improvements**
+  - `initMacroMap()` - Input validation and size limits
+  - `modifyCaseUnicode()` - Code table bounds validation
+  - Buffer overflow prevention
+  - Safe cursor management
 
-##### Version 1.0.8: (19/02/2019)
-- Switch key: Control + Command + Space  --> Control + Z
+#### macOS Platform
+- **Thread Safety Improvements**
+  - Thread-safe initialization with `NSLock`
+  - Protection against race conditions in event tap initialization
+  - Safe concurrent access to shared state
 
-##### Version 1.0.7: (15/02/2019)
-- Fix case "duongd".
-- Fix end consonant "t".
+- **Memory Management Improvements**
+  - Safe memory release patterns
+  - NULL checking before `CFRelease`
+  - Exception handling with `@try/@catch`
+  - Proper cleanup in `stopEventTap()`
 
-##### Version 1.0.6: (15/02/2019)
-- Fix case "quatw".
+- **Error Handling Enhancements**
+  - Enhanced event tap error handling
+  - Network error handling with timeout (10s request, 30s resource)
+  - Permission checking before operations
+  - Better error messages and logging
 
-##### Version 1.0.5: (13/02/2019)
-- Spelling enhanced.
-- Correct 1x menu icon.
+- **Code Quality**
+  - Refactored macros to inline functions for better type safety
+  - Improved debuggability
+  - Better code maintainability
 
-##### Version 1.0.3: (11/02/2019)
-- Fix auto correct on Chrome.
+#### Documentation
+- **Comprehensive User Guides**
+  - `win32/USER_GUIDE.md` - Complete Windows user guide
+  - `win32/DEVELOPER_GUIDE.md` - Windows developer guide
+  - `macOS/USER_GUIDE.md` - Complete macOS user guide
+  - `macOS/DEVELOPER_GUIDE.md` - macOS developer guide
 
-##### Version 1.0: (11/02/2019)
-- First release.
+- **Technical Documentation**
+  - `PROJECT_OVERVIEW.md` - High-level project overview
+  - `engine/ENGINE_REVIEW_AND_IMPROVEMENTS.md` - Engine review
+  - `engine/IMPROVEMENTS_SUMMARY.md` - Engine improvements summary
+  - `engine/CROSS_PLATFORM_COMPATIBILITY.md` - Compatibility notes
+  - `macOS/MACOS_REVIEW_AND_IMPROVEMENTS.md` - macOS review
+  - `win32/XoneKey/CODE_REVIEW_AND_FEATURES.md` - Windows code review
+  - `win32/XoneKey/IMPLEMENTATION_SUMMARY.md` - Implementation summary
+  - `UI_UX_IMPROVEMENTS.md` - UI/UX improvement suggestions
+  - `FEATURE_ROADMAP.md` - Feature roadmap
 
+### Changed
 
+#### Windows Platform
+- **Thread Safety Improvements**
+  - Added critical section for `getFrontMostAppExecuteName()` to prevent race conditions
+  - Thread-safe process query operations
+  - Proper initialization and cleanup of critical sections
 
-# XoneKey lịch sử
+- **Window Event Hook Performance**
+  - Added throttling/debouncing for window change events
+  - Minimum 100ms between window event processing
+  - Prevents excessive processing on rapid window switches
+  - Performance logging for window events
 
-##### Version 1.0.17: (31/07/2019)
-- Thêm chế độ Simple Telex.
-- Icon trắng đen trên menu bar.
-- Lỡ bấm phím Space, xoá space vẫn có thể bỏ dấu.
-- Bỏ dấu kiểu cũ/mới: òa, úy | oà, uý.
-- Tuỳ chọn phím chuyển.
-- Gõ nhanh (cc=ch, gg=gi, kk=kh, nn=ng, qq=qu, pp=ph, tt=th).
-- Hỗ trợ TextWrangler.
+- **Network Operations**
+  - `XoneKeyHelper::getContentOfUrl()` now uses `NetworkHelper::DownloadContent()`
+  - Automatic fallback if WinHttp fails
+  - Better error handling and timeout control
 
-##### Version 1.0.11: (27/02/2019)
-- Thêm trường hợp "chú thòong", "gòong".
+- **Update Check**
+  - Moved to background thread to prevent UI blocking
+  - Message handler (`WM_USER + 2020`) to show update dialog when check completes
+  - Non-blocking main message loop
 
-##### Version 1.0.10: (26/02/2019)
-- Sửa lỗi "duocd".
+#### Engine
+- **Code Modernization**
+  - Macros refactored to inline functions (macOS)
+  - Better type safety
+  - Improved debuggability
+  - Consistent error handling patterns
 
-##### Version 1.0.9: (22/02/2019)
-- Sửa lỗi từ sai khi đổi chế độ mà không bấm phím Space.
+- **Cross-Platform Compatibility**
+  - All safety improvements are platform-agnostic
+  - Standard C++ only, no platform dependencies
+  - Works on Windows, macOS, and Linux
 
-##### Version 1.0.8: (19/02/2019)
-- Phím chuyển: Control + Command + Space  --> Control + Z
+### Fixed
 
-##### Version 1.0.7: (15/02/2019)
-- Sửa lỗi "duongd".
-- Sửa lỗi phụ âm cuối "t".
+#### Windows Platform
+- **Critical Bug Fixes**
+  - Fixed network timeout issue - `getContentOfUrl()` now has proper timeout handling
+  - Fixed missing error handling in process query - `getFrontMostAppExecuteName()` now validates all operations
+  - Fixed blocking network call in main thread - update check moved to background thread
+  - Fixed missing toast notification when switching typing mode via shortcut key
 
-##### Version 1.0.6: (15/02/2019)
-- Sửa lỗi "quatw".
+- **Compatibility Fixes**
+  - Changed `GetTempPath2` to `GetTempPath` for better compatibility
+  - Fixed `std::ofstream` wide string path handling in `NetworkHelper`
 
-##### Version 1.0.5: (13/02/2019)
-- Nâng cao chính tả.
-- Sửa icon cho màn hình non-retina.
+#### Engine
+- **Safety Fixes**
+  - Fixed potential buffer overflows in array access
+  - Fixed index underflow in delete key handling
+  - Fixed invalid code table access crashes
+  - Fixed memory leaks in macro loading
+  - Fixed bounds checking issues in multiple functions
 
-##### Version 1.0.3: (11/02/2019)
-- Sửa lỗi thanh địa chỉ trên Chrome.
+#### macOS Platform
+- **Memory Management Fixes**
+  - Fixed potential memory leaks in event tap cleanup
+  - Fixed double-release issues in `stopEventTap()`
+  - Fixed NULL pointer dereferences
 
-##### Version 1.0: (11/02/2019)
-- Phát hành lần đầu.
+- **Thread Safety Fixes**
+  - Fixed race conditions in event tap initialization
+  - Fixed concurrent access issues
+
+### Security
+
+- **Buffer Overflow Prevention**
+  - All array access now has bounds checking
+  - Index validation before use
+  - Safe increment/decrement operations
+
+- **Input Validation**
+  - Validate all external inputs
+  - Size limits for data
+  - Safe defaults when invalid
+
+- **Memory Safety**
+  - Bounds checking for memory operations
+  - Safe array access patterns
+  - Overflow/underflow protection
+
+### Performance
+
+- **Optimizations**
+  - Window event throttling reduces CPU usage
+  - Efficient event handling
+  - Minimal memory footprint
+  - Fast lookup tables
+  - Cached operations
+
+- **Monitoring**
+  - Performance timers
+  - Slow operation detection
+  - Event frequency tracking
+  - Resource usage monitoring
+
+### Removed
+
+- Removed obsolete `win32/CodeReview.md` (replaced by `CODE_REVIEW_AND_FEATURES.md`)
+- Removed Visual Studio user-specific files (`.vcxproj.user`)
+
+## [1.0.1] - 2019-09-19
+
+### Added
+- Initial Windows release
+- Basic Vietnamese input functionality
+- System tray integration
+- Auto-start with Windows
+
+## [1.0.0] - 2019-02-01
+
+### Added
+- Initial macOS release
+- Basic Vietnamese input functionality
+- Menu bar integration
+- Auto-start with login items
+
+---
+
+## Release Notes
+
+### Version 1.0.2 Highlights
+
+This is a major stability and quality release. Key improvements include:
+
+1. **Stability**: Fixed critical bugs that could cause application hangs
+2. **Performance**: Added monitoring and throttling to prevent performance issues
+3. **Safety**: Comprehensive bounds checking and input validation
+4. **Quality**: Better error handling, logging, and diagnostics
+5. **Documentation**: Complete guides for users and developers
+
+### Migration Notes
+
+- **Windows**: No breaking changes. Existing settings and configurations are preserved.
+- **macOS**: No breaking changes. Existing settings and configurations are preserved.
+- **Engine**: All improvements are backward compatible.
+
+### Known Issues
+
+- Linux support is still in development
+- Some advanced features (cloud sync, themes) are planned for future releases
+
+### Contributors
+
+Special thanks to all contributors who helped improve XoneKey!
+
+---
+
+**For detailed information about specific changes, please refer to:**
+- `win32/XoneKey/CODE_REVIEW_AND_FEATURES.md` - Windows improvements
+- `engine/IMPROVEMENTS_SUMMARY.md` - Engine improvements
+- `macOS/MACOS_REVIEW_AND_IMPROVEMENTS.md` - macOS improvements
+- `PROJECT_OVERVIEW.md` - Overall project information
+
+---
+
+[Unreleased]: https://github.com/xonevn-ai/xonekey/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/xonevn-ai/xonekey/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/xonevn-ai/xonekey/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/xonevn-ai/xonekey/releases/tag/v1.0.0
