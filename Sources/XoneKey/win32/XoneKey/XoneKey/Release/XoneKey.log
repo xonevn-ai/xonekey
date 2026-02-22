@@ -1,0 +1,61 @@
+﻿  stdafx.cpp
+  ConvertTool.cpp
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\ConvertTool.cpp(31,27): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\ConvertTool.cpp(63,23): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\ConvertTool.cpp(66,15): warning C4018: '<': signed/unsigned mismatch
+  Engine.cpp
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(152,19): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(161,19): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(197,27): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(201,31): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(242,31): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(244,37): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(261,29): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(264,31): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(420,31): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(440,23): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(461,19): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(481,31): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(705,21): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(707,27): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(713,17): warning C4018: '>=': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(1109,23): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(1119,23): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(1171,23): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(1196,23): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(1201,27): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Engine.cpp(1250,19): warning C4018: '<': signed/unsigned mismatch
+  Macro.cpp
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Macro.cpp(35,23): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Macro.cpp(48,31): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Macro.cpp(171,27): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Macro.cpp(193,35): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Macro.cpp(208,19): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Macro.cpp(221,27): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\Macro.cpp(231,31): warning C4018: '<': signed/unsigned mismatch
+  SmartSwitchKey.cpp
+F:\Xone_Prj\XoneKey\Sources\XoneKey\engine\SmartSwitchKey.cpp(47,27): warning C4018: '<': signed/unsigned mismatch
+  Vietnamese.cpp
+  AboutDialog.cpp
+  AppDelegate.cpp
+  BaseDialog.cpp
+  ConvertToolDialog.cpp
+F:\Xone_Prj\XoneKey\Sources\XoneKey\win32\XoneKey\XoneKey\ConvertToolDialog.cpp(78,20): warning C4018: '<': signed/unsigned mismatch
+  MacroDialog.cpp
+  main.cpp
+  MainControlDialog.cpp
+F:\Xone_Prj\XoneKey\Sources\XoneKey\win32\XoneKey\XoneKey\MainControlDialog.cpp(47,23): warning C4018: '<': signed/unsigned mismatch
+F:\Xone_Prj\XoneKey\Sources\XoneKey\win32\XoneKey\XoneKey\MainControlDialog.cpp(55,23): warning C4018: '<': signed/unsigned mismatch
+  ToastNotification.cpp
+  XoneKey.cpp
+  XoneKeyHelper.cpp
+  XoneKeyManager.cpp
+  SystemTrayHelper.cpp
+  ApplicationHealthMonitor.cpp
+  PerformanceLogger.cpp
+  NetworkHelper.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 2736 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  XoneKey.vcxproj -> F:\Xone_Prj\XoneKey\Sources\XoneKey\win32\XoneKey\Release\XoneKey32.exe

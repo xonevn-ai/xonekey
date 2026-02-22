@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Sources/XoneKey/win32/XoneKey/.vs/XoneKey
+/Sources/XoneKey/win32/XoneKey/x64/Debug
+/Sources/XoneKey/win32/XoneKey/x64/Release
+/Sources/XoneKey/win32/XoneKey/XoneKey/x64/Debug
+/Sources/XoneKey/win32/XoneKey/XoneKey/x64/Release
+/Sources/XoneKey/win32/XoneKey/XoneKeyUpdate/x64/Release
