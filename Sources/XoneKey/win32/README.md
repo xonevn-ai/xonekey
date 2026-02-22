@@ -1,10 +1,10 @@
 # XoneKey for Windows
 
-[![GitHub release](https://img.shields.io/github/v/release/vituocgia/XoneKey.svg)](https://github.com/vituocgia/XoneKey/releases/latest)
+[![GitHub release](https://img.shields.io/github/v/release/xonevn-ai/xonekey.svg)](https://github.com/xonevn-ai/xonekey/releases/latest)
 
 XoneKey là ứng dụng gõ tiếng Việt miễn phí và mã nguồn mở cho Windows, được phát triển từ phiên bản macOS với đầy đủ tính năng.
 
-![Main UI](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/win32_2.0_1.png)
+![Main UI](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/win32_2.0_1.png)
 
 ## Tính Năng Chính
 
@@ -49,7 +49,7 @@ XoneKey là ứng dụng gõ tiếng Việt miễn phí và mã nguồn mở cho
 
 ### Cách 1: Download từ GitHub Releases
 
-1. Vào [GitHub Releases](https://github.com/vituocgia/XoneKey/releases/latest)
+1. Vào [GitHub Releases](https://github.com/xonevn-ai/xonekey/releases/latest)
 2. Tải file `.zip` phiên bản mới nhất
 3. Giải nén vào thư mục bất kỳ
 4. Chạy `XoneKey.exe`
@@ -108,9 +108,9 @@ Xem [USER_GUIDE.md](USER_GUIDE.md) để biết chi tiết về cách sử dụn
 
 ## Hình Ảnh
 
-![Menu](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/win32_5.png "Menu")
-![Macro Table](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/win32_2.png "Macro table")
-![Convert Tool](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/win32_3.png "Convert tool")
+![Menu](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/win32_5.png "Menu")
+![Macro Table](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/win32_2.png "Macro table")
+![Convert Tool](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/win32_3.png "Convert tool")
 
 ## Tính Năng Mới
 
@@ -200,7 +200,7 @@ Chúng tôi hoan nghênh mọi đóng góp! Vui lòng:
 
 ## Support
 
-- **GitHub Issues:** [Report Issues](https://github.com/vituocgia/XoneKey/issues)
+- **GitHub Issues:** [Report Issues](https://github.com/xonevn-ai/xonekey/issues)
 - **Documentation:** Xem USER_GUIDE.md và DEVELOPER_GUIDE.md
 - **Website:** [XoneKey Website]
 

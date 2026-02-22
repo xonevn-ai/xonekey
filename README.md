@@ -1,7 +1,7 @@
 
 # [XoneKey](http://vkey.xone.vn)
-### [Download bản mới nhất](https://github.com/vituocgia/XoneKey/releases)
-[![GitHub release](https://img.shields.io/github/v/release/vituocgia/XoneKey.svg)](https://github.com/vituocgia/XoneKey/releases/latest)
+### [Download bản mới nhất](https://github.com/xonevn-ai/xonekey/releases)
+[![GitHub release](https://img.shields.io/github/v/release/xonevn-ai/xonekey.svg)](https://github.com/xonevn-ai/xonekey/releases/latest)
 
 ### Open source Vietnamese Input App for macOS - Bộ gõ tiếng Việt nguồn mở cho macOS.
 Bộ gõ tiếng Việt mới cho macOS, sử dụng kỹ thuật `Backspace`. Loại bỏ lỗi gạch chân khó chịu ở bộ gõ mặc định. Hoàn toàn miễn phí và là nguồn mở, luôn cập nhật và phát triển.
@@ -10,12 +10,12 @@ Bộ gõ tiếng Việt mới cho macOS, sử dụng kỹ thuật `Backspace`. L
 
 ### Lưu ý, khi sử dụng XoneKey, bạn nên tắt hẳn bộ gõ khác vì 2 chương trình bộ gõ sẽ xung đột nhau, dẫn đến thao tác không chính xác.
 
-![Giao diện](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/openkey-main-control.png "Main UI")
-![Giao diện](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/openkey-main-control-2.png "Main UI")
-![Giao diện](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/openkey-main-control-3.png "Main UI")
-![Menu](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/openkey-small-control.png "Menu bar")
-![Gõ tắt](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/openkey-macro.png "Macro")
-![Chuyển mã](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/openkey-convert-tool.png "ConvertTool")
+![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-main-control.png "Main UI")
+![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-main-control-2.png "Main UI")
+![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-main-control-3.png "Main UI")
+![Menu](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-small-control.png "Menu bar")
+![Gõ tắt](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-macro.png "Macro")
+![Chuyển mã](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-convert-tool.png "ConvertTool")
 
 ## Hỗ trợ kiểu gõ
 - Telex
@@ -57,11 +57,11 @@ Bộ gõ tiếng Việt mới cho macOS, sử dụng kỹ thuật `Backspace`. L
 - ...
 
 
-[Changelog](https://github.com/vituocgia/XoneKey/blob/master/CHANGELOG.md)
+[Changelog](https://github.com/xonevn-ai/xonekey/blob/master/CHANGELOG.md)
 
 ## Cài đặt:
 **Cài đặt thủ công:**  
-Tải bản XoneKey mới nhất từ [đây](https://github.com/vituocgia/XoneKey/releases/latest), mở file `dmg` ra rồi kéo thả `XoneKey.app` vào thư mục `Application`.
+Tải bản XoneKey mới nhất từ [đây](https://github.com/xonevn-ai/xonekey/releases/latest), mở file `dmg` ra rồi kéo thả `XoneKey.app` vào thư mục `Application`.
 
 **Cài bằng Homebrew:** (by nhymxu)  
 Nếu chưa cài Homebrew, mở terminal, nhập:
@@ -85,7 +85,7 @@ $ brew upgrade --cask openkey
 
 ## Note - Lưu ý:
 XoneKey cần cấp quyền, vào *System Preferences -> Security & Privacy -> Accessibility*, kích hoạt `XoneKey.app`. **Không tắt nó khi đang dùng XoneKey**.
-![Guide](https://raw.githubusercontent.com/vituocgia/vituocgia.github.io/master/images/openkey-guide.png "Accessibility").
+![Guide](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/openkey-guide.png "Accessibility").
 
 ## Tác giả
 - Đỗ Tiến Điệp.
@@ -93,8 +93,8 @@ XoneKey cần cấp quyền, vào *System Preferences -> Security & Privacy -> A
 - Fanpage: [https://www.facebook.com/XoneKeyVN](https://www.facebook.com/XoneKeyVN)
 
 ## Liên kết
-- [XoneKey cho Windows, xem chi tiết tại đây](https://github.com/vituocgia/XoneKey/tree/master/Sources/XoneKey/win32)
-- [XoneKey cho Linux (đang phát triển)](https://github.com/vituocgia/XoneKey/tree/master/Sources/XoneKey/linux)
+- [XoneKey cho Windows, xem chi tiết tại đây](https://github.com/xonevn-ai/xonekey/tree/master/Sources/XoneKey/win32)
+- [XoneKey cho Linux (đang phát triển)](https://github.com/xonevn-ai/xonekey/tree/master/Sources/XoneKey/linux)
 ## Một điều nhỏ nhoi
 Đừng quên ủng hộ tác giả bằng cách mua ly cafe cho tác giả tỉnh ngủ nhé:  
 [Buy me a coffee ^^](https://vituocgia.github.io/donate.html)  

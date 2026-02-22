@@ -1,6 +1,6 @@
 # XoneKey
 
-[![GitHub release](https://img.shields.io/github/v/release/vituocgia/XoneKey.svg)](https://github.com/vituocgia/XoneKey/releases/latest)
+[![GitHub release](https://img.shields.io/github/v/release/xonevn-ai/xonekey.svg)](https://github.com/xonevn-ai/xonekey/releases/latest)
 [![License: GPL](https://img.shields.io/badge/License-GPL-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 **XoneKey** - Bộ gõ tiếng Việt miễn phí, mã nguồn mở, cross-platform cho macOS, Windows, và Linux.
@@ -25,13 +25,13 @@ XoneKey là ứng dụng gõ tiếng Việt được thiết kế để cung c�
 ### 🍎 macOS
 - **Status:** ✅ Stable
 - **Requirements:** macOS 10.13+
-- **Download:** [GitHub Releases](https://github.com/vituocgia/XoneKey/releases)
+- **Download:** [GitHub Releases](https://github.com/xonevn-ai/xonekey/releases)
 - **Documentation:** [macOS USER_GUIDE.md](macOS/USER_GUIDE.md) | [DEVELOPER_GUIDE.md](macOS/DEVELOPER_GUIDE.md)
 
 ### 🪟 Windows
 - **Status:** ✅ Stable
 - **Requirements:** Windows Vista+
-- **Download:** [GitHub Releases](https://github.com/vituocgia/XoneKey/releases)
+- **Download:** [GitHub Releases](https://github.com/xonevn-ai/xonekey/releases)
 - **Documentation:** [Windows USER_GUIDE.md](win32/USER_GUIDE.md) | [DEVELOPER_GUIDE.md](win32/DEVELOPER_GUIDE.md)
 
 ### 🐧 Linux
@@ -42,7 +42,7 @@ XoneKey là ứng dụng gõ tiếng Việt được thiết kế để cung c�
 
 ### macOS
 
-1. Download từ [GitHub Releases](https://github.com/vituocgia/XoneKey/releases)
+1. Download từ [GitHub Releases](https://github.com/xonevn-ai/xonekey/releases)
 2. Mở `XoneKey.dmg` và kéo vào Applications
 3. Mở XoneKey và cấp quyền Accessibility
 4. Bắt đầu gõ tiếng Việt!
@@ -51,7 +51,7 @@ Xem [macOS USER_GUIDE.md](macOS/USER_GUIDE.md) để biết chi tiết.
 
 ### Windows
 
-1. Download từ [GitHub Releases](https://github.com/vituocgia/XoneKey/releases)
+1. Download từ [GitHub Releases](https://github.com/xonevn-ai/xonekey/releases)
 2. Giải nén và chạy `XoneKey.exe`
 3. Cho phép chạy với quyền Administrator
 4. Bắt đầu gõ tiếng Việt!
@@ -211,7 +211,7 @@ XoneKey được phát hành dưới giấy phép **GPL (GNU General Public Lice
 
 ## 💬 Support
 
-- **GitHub Issues:** [Report Issues](https://github.com/vituocgia/XoneKey/issues)
+- **GitHub Issues:** [Report Issues](https://github.com/xonevn-ai/xonekey/issues)
 - **Documentation:** Xem USER_GUIDE.md và DEVELOPER_GUIDE.md
 - **Website:** [XoneKey Website]
 
@@ -219,7 +219,7 @@ XoneKey được phát hành dưới giấy phép **GPL (GNU General Public Lice
 
 **Developer:** Daniel Do (diep@xone.vn)
 
-**Contributors:** See [GitHub Contributors](https://github.com/vituocgia/XoneKey/graphs/contributors)
+**Contributors:** See [GitHub Contributors](https://github.com/xonevn-ai/xonekey/graphs/contributors)
 
 ## 📖 Learn More
 

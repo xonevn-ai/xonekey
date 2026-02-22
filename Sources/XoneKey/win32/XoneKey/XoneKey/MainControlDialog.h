@@ -3,7 +3,7 @@ XoneKey - The Cross platform Open source Vietnamese Keyboard application.
 
 Copyright (C) 2025 Daniel Do
 Contact: diep@xone.vn
-Github: https://github.com/vituocgia/XoneKey
+Github: https://github.com/xonevn-ai/xonekey
 Fanpage: https://www.facebook.com/XoneKeyVN
 
 This file is belong to the XoneKey project, Win32 version

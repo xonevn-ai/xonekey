@@ -506,7 +506,7 @@ extern int vPerformLayoutCompat;
 }
 
 - (IBAction)onSourceCode:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL: [NSURL URLWithString:@"https://github.com/vituocgia/XoneKey"]];
+  [[NSWorkspace sharedWorkspace] openURL: [NSURL URLWithString:@"https://github.com/xonevn-ai/xonekey"]];
 }
 
 - (IBAction)onCheckNewVersionButton:(id)sender {

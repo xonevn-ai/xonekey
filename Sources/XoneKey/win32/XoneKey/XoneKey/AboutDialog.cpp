@@ -3,7 +3,7 @@ XoneKey - The Cross platform Open source Vietnamese Keyboard application.
 
 Copyright (C) 2025 Daniel Do
 Contact: diep@xone.vn
-Github: https://github.com/vituocgia/XoneKey
+Github: https://github.com/xonevn-ai/xonekey
 Fanpage: https://www.facebook.com/XoneKeyVN
 
 This file is belong to the XoneKey project, Win32 version
@@ -60,9 +60,9 @@ INT_PTR AboutDialog::eventProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		{
 			PNMLINK link = (PNMLINK)lParam;
 			if (link->hdr.idFrom == IDC_SYSLINK_HOME_PAGE)
-				ShellExecute(NULL, _T("open"), _T("https://github.com/vituocgia/XoneKey"), NULL, NULL, SW_SHOWNORMAL);
+				ShellExecute(NULL, _T("open"), _T("https://github.com/xonevn-ai/xonekey"), NULL, NULL, SW_SHOWNORMAL);
 			else if (link->hdr.idFrom == IDC_SYSLINK_NEW_VERSION)
-				ShellExecute(NULL, _T("open"), _T("https://github.com/vituocgia/XoneKey/releases"), NULL, NULL, SW_SHOWNORMAL);
+				ShellExecute(NULL, _T("open"), _T("https://github.com/xonevn-ai/xonekey/releases"), NULL, NULL, SW_SHOWNORMAL);
 			else if (link->hdr.idFrom == IDC_SYSLINK_FANPAGE)
 				ShellExecute(NULL, _T("open"), _T("https://www.facebook.com/XoneKeyVN"), NULL, NULL, SW_SHOWNORMAL);
 		}

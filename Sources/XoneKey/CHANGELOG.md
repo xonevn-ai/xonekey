@@ -277,8 +277,8 @@ Special thanks to all contributors who helped improve XoneKey!
 
 ---
 
-[Unreleased]: https://github.com/vituocgia/XoneKey/compare/v2.0.0...HEAD
-[2.0.0]: https://github.com/vituocgia/XoneKey/compare/v1.0.1...v2.0.0
-[1.0.1]: https://github.com/vituocgia/XoneKey/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/vituocgia/XoneKey/releases/tag/v1.0.0
+[Unreleased]: https://github.com/xonevn-ai/xonekey/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/xonevn-ai/xonekey/compare/v1.0.1...v2.0.0
+[1.0.1]: https://github.com/xonevn-ai/xonekey/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/xonevn-ai/xonekey/releases/tag/v1.0.0
 

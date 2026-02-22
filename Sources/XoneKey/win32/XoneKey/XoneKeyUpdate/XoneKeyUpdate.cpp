@@ -3,7 +3,7 @@ XoneKey - The Cross platform Open source Vietnamese Keyboard application.
 
 Copyright (C) 2025 Daniel Do
 Contact: diep@xone.vn
-Github: https://github.com/vituocgia/XoneKey
+Github: https://github.com/xonevn-ai/xonekey
 Fanpage: https://www.facebook.com/XoneKeyVN
 
 This file is belong to the XoneKey project, Win32 version
@@ -76,7 +76,7 @@ DWORD WINAPI UpdateThreadFunction(LPVOID lpParam) {
 	WCHAR currentDir[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, currentDir);
 	wsprintf(path, TEXT("%s\\_XoneKey.tempf"), currentDir);
-	HRESULT res = URLDownloadToFile(NULL, L"https://raw.githubusercontent.com/vituocgia/XoneKey/master/version.json", path, 0, NULL);
+	HRESULT res = URLDownloadToFile(NULL, L"https://raw.githubusercontent.com/xonevn-ai/xonekey/master/version.json", path, 0, NULL);
 
 	wstring data;
 	if (res == S_OK) {
@@ -102,7 +102,7 @@ DWORD WINAPI UpdateThreadFunction(LPVOID lpParam) {
 	
 	//download zip file
 	WCHAR updateUrl[MAX_PATH];
-	wsprintf(updateUrl, TEXT("https://github.com/vituocgia/XoneKey/releases/download/%s/XoneKey%s-Windows.zip"),
+	wsprintf(updateUrl, TEXT("https://github.com/xonevn-ai/xonekey/releases/download/%s/XoneKey%s-Windows.zip"),
 		versionName.c_str(),
 		versionName.c_str());
 	wsprintf(path, TEXT("%s\\_XoneKeyUpdate.zip"), currentDir);

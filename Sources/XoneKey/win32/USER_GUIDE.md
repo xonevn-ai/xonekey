@@ -31,7 +31,7 @@ XoneKey là ứng dụng gõ tiếng Việt miễn phí cho Windows, hỗ trợ 
 ### Download & Install
 
 1. **Download XoneKey**
-   - Vào [GitHub Releases](https://github.com/vituocgia/XoneKey/releases/latest)
+   - Vào [GitHub Releases](https://github.com/xonevn-ai/xonekey/releases/latest)
    - Tải file `.zip` phiên bản mới nhất
 
 2. **Extract và Install**
@@ -494,7 +494,7 @@ XoneKey hiển thị thông báo khi:
 ## Support
 
 ### Getting Help
-- **GitHub Issues:** [Report Issues](https://github.com/vituocgia/XoneKey/issues)
+- **GitHub Issues:** [Report Issues](https://github.com/xonevn-ai/xonekey/issues)
 - **Documentation:** Xem DEVELOPER_GUIDE.md cho technical details
 
 ### Reporting Bugs

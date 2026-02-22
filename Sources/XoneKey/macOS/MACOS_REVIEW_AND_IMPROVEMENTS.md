@@ -149,7 +149,7 @@ Document này review macOS project của XoneKey và đề xuất các cải thi
     config.timeoutIntervalForResource = 30.0;
     
     NSURLSession *aSession = [NSURLSession sessionWithConfiguration:config];
-    NSURL *url = [NSURL URLWithString:@"https://raw.githubusercontent.com/vituocgia/XoneKey/master/version.json"];
+    NSURL *url = [NSURL URLWithString:@"https://raw.githubusercontent.com/xonevn-ai/xonekey/master/version.json"];
     
     [[aSession dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {

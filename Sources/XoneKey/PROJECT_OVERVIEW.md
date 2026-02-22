@@ -518,7 +518,7 @@ XoneKey is released under the **GPL (GNU General Public License)**.
 
 ### Getting Help
 
-- **GitHub Issues:** [Report Issues](https://github.com/vituocgia/XoneKey/issues)
+- **GitHub Issues:** [Report Issues](https://github.com/xonevn-ai/xonekey/issues)
 - **Documentation:** See USER_GUIDE.md and DEVELOPER_GUIDE.md
 - **Website:** [XoneKey Website]
 
@@ -548,7 +548,7 @@ XoneKey is released under the **GPL (GNU General Public License)**.
 
 ## Links
 
-- **GitHub:** https://github.com/vituocgia/XoneKey
+- **GitHub:** https://github.com/xonevn-ai/xonekey
 - **Website:** [XoneKey Website]
 - **Fanpage:** https://www.facebook.com/XoneKeyVN
 
