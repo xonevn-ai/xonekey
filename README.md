@@ -1,105 +1,61 @@
+# XoneKey
 
-# [XoneKey](http://vkey.xone.vn)
-### [Download bản mới nhất](https://github.com/xonevn-ai/xonekey/releases)
+[![MSBuild](https://github.com/xonevn-ai/xonekey/actions/workflows/msbuild.yml/badge.svg)](https://github.com/xonevn-ai/xonekey/actions/workflows/msbuild.yml)
 [![GitHub release](https://img.shields.io/github/v/release/xonevn-ai/xonekey.svg)](https://github.com/xonevn-ai/xonekey/releases/latest)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-### Open source Vietnamese Input App for macOS - Bộ gõ tiếng Việt nguồn mở cho macOS.
-Bộ gõ tiếng Việt mới cho macOS, sử dụng kỹ thuật `Backspace`. Loại bỏ lỗi gạch chân khó chịu ở bộ gõ mặc định. Hoàn toàn miễn phí và là nguồn mở, luôn cập nhật và phát triển.
+**XoneKey** is a modern, high-performance, and open-source Vietnamese input application for Windows, macOS, and Linux. It aims to provide a seamless typing experience while eliminating common issues like the underline bug on macOS and lag on Windows.
 
-### Mã nguồn của ứng dụng được mở công khai, minh bạch dưới giấy phép GPL. Điều này nghĩa là bạn hoàn toàn có thể tải mã nguồn về tự build, cải tiến theo mục đích của bạn. Nếu bạn tái phân phối bản cải tiến của bạn, thì nó cũng phải là mã nguồn mở và thông báo bản gốc là XoneKey.
+## 🚀 Key Features (v1.0.2)
 
-### Lưu ý, khi sử dụng XoneKey, bạn nên tắt hẳn bộ gõ khác vì 2 chương trình bộ gõ sẽ xung đột nhau, dẫn đến thao tác không chính xác.
+-   **High Performance**: Minimal lag and low resource consumption.
+-   **Stability Watchdog**: (Windows) Dedicated background thread monitors health and automatically recovers from hangs.
+-   **Smart Switch**: Automatically remembers and switches your typing mode (Vietnamese/English) based on the active application.
+-   **Async Engine**: (Windows) Non-blocking process queries and network updates to keep your typing fluid.
+-   **Rich Engine**: Supports Telex, VNI, and Simple Telex with modern orthography (òa, úy vs oà, uý).
+-   **Advanced Macros**: Unlimited length macros with support for any character or code table.
+-   **Cross-Platform Core**: Shared C++ core engine ensures consistent typing behavior across Windows, macOS, and Linux.
 
-![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-main-control.png "Main UI")
-![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-main-control-2.png "Main UI")
-![Giao diện](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-main-control-3.png "Main UI")
-![Menu](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-small-control.png "Menu bar")
-![Gõ tắt](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-macro.png "Macro")
-![Chuyển mã](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-convert-tool.png "ConvertTool")
+## 📥 Download
 
-## Hỗ trợ kiểu gõ
-- Telex
-- VNI
-- Simple Telex
+Get the latest stable release for your platform from the [Releases](https://github.com/xonevn-ai/xonekey/releases) page.
 
-## Bảng mã thông dụng:
-- Unicode (Unicode dựng sẵn).
-- TCVN3 (ABC).
-- VNI Windows.
-- Unicode Compound (Unicode tổ hợp).
-- Vietnamese Locale CP 1258.
-- ...
+## 🔧 Build & Development
 
-## Tính năng:
-- **Modern orthography** (On/Off) - Đặt dấu oà, uý thay vì òa, úy.
-- **Quick Telex** (On/Off) - Gõ nhanh (cc=ch, gg=gi, kk=kh, nn=ng, qq=qu, pp=ph, tt=th).
-- **Grammar check** (On/Off) - Kiểm tra ngữ pháp.
-- **Spelling check** (On/Off) - Kiểm tra chính tả.
-- **Restore key if invalid word** (on/off) - Phục hồi phím với từ sai.
-- **Run on startup** (On/Off) - Chạy cùng macOS.
-- **Gray menu bar icon** (On/Off) - Biểu tượng xám trên thanh menu phù hợp với chế độ Dark mode.
-- **Switch input mode by shortcut key** - Đổi chế độ gõ bằng phím tắt tùy chọn.
-- **Autocorrect fixed** (On/Off) - Sửa lỗi autocorrect trên trình duyệt như Chrome, Safari, Firefox, Microsoft Excel.
-- **Underline issue fixed on macOS** (On/Off) - Sửa lỗi gạch chân trên macOS.
-- **Tạm tắt kiểm tra chính tả bằng phím Ctrl** (On/Off) (Bản 1.5 về sau).
-- **Tạm tắt XoneKey bằng phím Cmd/Alt** (On/Off) (Bản 2.0.1 về sau).
-- **Cho phép dùng f z w j làm phụ âm đầu** (On/Off) (Bản 1.5 về sau).
-- **Gõ tắt phụ âm đầu: f->ph, j->gi, w->qu** (On/Off) (Bản 1.6 về sau).
-- **Gõ tắt phụ âm cuối: g->ng, h->nh, k->ch** (On/Off) (Bản 1.6 về sau).
-- **Hiện biểu tượng trên thanh Dock** (On/Off) (Bản 2.0.1 về sau). Bấm vào icon trên thanh Dock sẽ mở nhanh Bảng điều khiển.
-- **Macro** - Tính năng gõ tắt vô cùng tiện lợi. Gõ tắt của macOS chỉ hỗ trợ 20 ký tự, còn XoneKey không giới hạn ký tự.
-- **Chuyển chế độ thông minh:** (On/Off) (Bản 1.2 về sau) - Bạn đang dùng chế độ gõ Tiếng Việt trên ứng dụng A, bạn chuyển qua ứng dụng B trước đó bạn dùng chế độ gõ Tiếng Anh, XoneKey sẽ tự động chuyển qua chế độ gõ Tiếng Anh cho bạn, khi bạn quay lại ứng dụng A, XoneKey tất nhiên sẽ chuyển lại chế độ gõ tiếng Việt, rất cơ động.
-- **Viết Hoa chữ cái đầu câu** (On/Off) (Bản 1.2 về sau) - Khi gõ văn bản dài, đôi khi bạn quên ghi hoa chữ cái đầu câu khi kết thúc một câu hoặc khi xuống hàng, tính năng này sẽ tự ghi hoa chữ cái đầu câu cho bạn, thật tuyệt vời.
-- **Chế độ “Gửi từng phím”:** (On/Off) (Bản 1.1 về sau) mặc định dùng kỹ thuật mới gửi dữ liệu 1 lần thay vì gửi nhiều lần cho chuỗi ký tự, nên nếu có ứng dụng nào không tương thích, hãy bật tính năng này lên, mặc định thì nên tắt vì kỹ thuật mới sẽ chạy nhanh hơn.
-- **Cập nhật tự động:** (Bản 1.3 về sau) tính năng hỗ trợ cập nhật phiên bản XoneKey mới nhất mỗi khi mở XoneKey hoặc tự check trong phần mục Giới thiệu.
-- **Công cụ chuyển mã:** (Bản 1.4 về sau) hỗ trợ chuyển mã qua lại văn bản, thích hợp cho việc chuyển đổi văn bản cũ viết bằng VNI, TCVN3 qua Unicode,... Hỗ trợ cấu hình phím tắt chuyển mã nhanh, bảng cấu hình tùy chọn chuyển mã.
-- **Tự ghi nhớ bảng mã theo ứng dụng:** (Bản 2.0.1 về sau) Phù hợp cho các bạn dùng Photoshop, CAD,... với các bảng mã VNI, TCVN3. XoneKey tự ghi nhớ ứng dụng nào dùng bảng mã nào để lần sau sử dụng Photoshop, CAD,... XoneKey có thể tự chuyển sang bảng mã đó.
-- ...
+XoneKey is built using a shared C++ core engine with platform-specific UI layers.
 
+### Windows
+-   **Requirements**: Visual Studio 2019+
+-   **Solution**: `Sources/XoneKey/win32/XoneKey/XoneKey.sln`
+-   **Output**: `XoneKey.exe` (x86/x64)
 
-[Changelog](https://github.com/xonevn-ai/xonekey/blob/master/CHANGELOG.md)
+### macOS
+-   **Requirements**: Xcode 12+
+-   **Project**: `Sources/XoneKey/macOS/XoneKey.xcodeproj`
+-   **Homebrew**: `brew install --cask xonekey`
 
-## Cài đặt:
-**Cài đặt thủ công:**  
-Tải bản XoneKey mới nhất từ [đây](https://github.com/xonevn-ai/xonekey/releases/latest), mở file `dmg` ra rồi kéo thả `XoneKey.app` vào thư mục `Application`.
+### Linux (WSL/Ubuntu)
+-   **Requirements**: `g++`, `make`
+-   **Build**: See our [WSL Build Guide](Sources/XoneKey/WSL_BUILD_GUIDE.md) in the `engine` directory.
 
-**Cài bằng Homebrew:** (by nhymxu)  
-Nếu chưa cài Homebrew, mở terminal, nhập:
-```
-$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-```
+## 🤖 GitHub Automation
 
-Kiểm tra phiên bản XoneKey:
-```
-$ brew info --cask xonekey
-```
-Gõ lệnh sau để homebrew tự cài XoneKey cho bạn:
-```
-$ brew install --cask xonekey
-```
+We use GitHub Actions for continuous integration and automated releases.
+-   **Windows Builds**: Every push to `master` triggers a Windows build.
+-   **Releases**: Pushing a version tag (e.g., `v1.0.2`) automatically creates a draft release with packaged binaries.
+-   See the [GitHub Actions Guide](Sources/XoneKey/GITHUB_ACTIONS_GUIDE.md) for more details.
 
-Để update phiên bản mới nhất của XoneKey
-```
-$ brew upgrade --cask xonekey
-```
+## 🤝 Contributing
 
-## Note - Lưu ý:
-XoneKey cần cấp quyền, vào *System Preferences -> Security & Privacy -> Accessibility*, kích hoạt `XoneKey.app`. **Không tắt nó khi đang dùng XoneKey**.
-![Guide](https://raw.githubusercontent.com/xonevn-ai/xonevn-ai.github.io/master/images/xonekey-guide.png "Accessibility").
+XoneKey is open-source under the **GPL v3 License**. We welcome contributions of all forms!
+-   Feel free to fork the repository and submit a Pull Request.
+-   Join our [Fanpage](https://www.facebook.com/XoneKeyVN) for community support.
 
-## Tác giả
-- Đỗ Tiến Điệp.
-- Mọi góp ý, gửi cho mình qua diep@xone.vn  
-- Fanpage: [https://www.facebook.com/XoneKeyVN](https://www.facebook.com/XoneKeyVN)
+## ☕ Support the Author
 
-## Liên kết
-- [XoneKey cho Windows, xem chi tiết tại đây](https://github.com/xonevn-ai/xonekey/tree/master/Sources/XoneKey/win32)
-- [XoneKey cho Linux (đang phát triển)](https://github.com/xonevn-ai/xonekey/tree/master/Sources/XoneKey/linux)
-## Một điều nhỏ nhoi
-Đừng quên ủng hộ tác giả bằng cách mua ly cafe cho tác giả tỉnh ngủ nhé:  
-[Buy me a coffee ^^](https://xonevn-ai.github.io/donate.html)  
-[Redbull cũng được ^^](https://paypal.me/thegioivatdung)  
-Hoặc trực tiếp qua ví momo:   
-![Donate by momo](https://xonevn-ai.github.io/images/momo.png "Momo").   
+If you find XoneKey useful, consider supporting its development:
+-   [Buy me a coffee](https://xonevn-ai.github.io/donate.html)
+-   [Donate via PayPal](https://paypal.me/thegioivatdung)
 
-Cảm ơn các bạn rất nhiều.
+---
+Developed by **Đỗ Tiến Điệp** (diep@xone.vn)
