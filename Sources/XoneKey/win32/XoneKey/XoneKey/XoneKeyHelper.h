@@ -32,8 +32,8 @@ public:
 
 	static LPTSTR getExecutePath();
 
-	static string& getFrontMostAppExecuteName();
-	static string& getLastAppExecuteName();
+	static string getFrontMostAppExecuteName();
+	static string getLastAppExecuteName();
 
 	static wstring getFullPath();
 
@@ -62,6 +62,7 @@ public:
 
 	static void StartAsyncUpdateCheck(HWND hDlg, HWND hButton);
 
+	static void initialize();
 	static void cleanup();
 
 	static wstring getContentOfUrl(LPCTSTR url);

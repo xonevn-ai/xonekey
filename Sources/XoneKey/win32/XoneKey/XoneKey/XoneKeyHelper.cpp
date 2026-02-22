@@ -19,6 +19,7 @@ redistribute your new version, it MUST be open source.
 #include <sstream>
 #include "NetworkHelper.h"
 #include "XoneKeyManager.h"
+#include "PerformanceLogger.h"
 #include <psapi.h>
 
 #pragma comment(lib, "version.lib")
@@ -175,118 +176,130 @@ LPTSTR XoneKeyHelper::getExecutePath()
 	return _executePath;
 }
 
-// Worker thread structure for timeout-protected process query
-struct ProcessQueryParams {
-	DWORD processId;
-	HANDLE hProcess;
-	TCHAR exePath[1024];
-	bool success;
-	HANDLE hEvent; // Event to signal completion
-};
+// Background process watcher state
+static HANDLE _hWatcherThread = NULL;
+static HANDLE _hWatcherEvent = NULL; // Signal to perform an update
+static HANDLE _hStopWatcherEvent = NULL; // Signal to stop the thread
+static DWORD _pendingProcessId = 0;
+static bool _watcherRunning = false;
 
-// Worker thread function for process query with timeout protection
-DWORD WINAPI ProcessQueryWorkerThread(LPVOID lpParam)
+// Background thread procedure for process name resolution
+DWORD WINAPI ProcessWatcherThreadProc(LPVOID lpParam)
 {
-	ProcessQueryParams* params = (ProcessQueryParams*)lpParam;
-	params->success = false;
+	HANDLE hEvents[2] = { _hWatcherEvent, _hStopWatcherEvent };
 	
-	// Try to open process with limited permissions first (faster)
-	params->hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, params->processId);
-	if (params->hProcess == NULL || params->hProcess == INVALID_HANDLE_VALUE)
+	while (true)
 	{
-		// Fallback to full permissions
-		params->hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, params->processId);
+		DWORD dwWait = WaitForMultipleObjects(2, hEvents, FALSE, INFINITE);
+		
+		if (dwWait == WAIT_OBJECT_0 + 1) // Stop event
+			break;
+			
+		if (dwWait == WAIT_OBJECT_0) // Update event
+		{
+			DWORD pidToQuery = 0;
+			EnterCriticalSection(&_processQueryCs);
+			pidToQuery = _pendingProcessId;
+			LeaveCriticalSection(&_processQueryCs);
+			
+			if (pidToQuery == 0) continue;
+			
+			TCHAR path[1024];
+			ZeroMemory(path, sizeof(path));
+			
+			HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pidToQuery);
+			if (hProcess == NULL) {
+				hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pidToQuery);
+			}
+			
+			if (hProcess != NULL) {
+				if (GetProcessImageFileName(hProcess, path, 1024) != 0) {
+					TCHAR* name = _tcsrchr(path, '\\');
+					if (name == NULL) name = path;
+					else name++;
+
+					// Update the global cache
+					int size_needed = WideCharToMultiByte(CP_UTF8, 0, name, (int)lstrlen(name), NULL, 0, NULL, NULL);
+					if (size_needed > 0) {
+						std::string strTo(size_needed, 0);
+						WideCharToMultiByte(CP_UTF8, 0, name, (int)lstrlen(name), &strTo[0], size_needed, NULL, NULL);
+						
+						EnterCriticalSection(&_processQueryCs);
+						if (pidToQuery == _pendingProcessId) { // Only update if it's still the requested PID
+							if (strTo != "XoneKey64.exe" && strTo != "XoneKey32.exe" && strTo != "explorer.exe") {
+								_exeNameUtf8 = strTo;
+								_cacheProcessId = pidToQuery;
+							}
+						}
+						LeaveCriticalSection(&_processQueryCs);
+					}
+				}
+				CloseHandle(hProcess);
+			}
+		}
 	}
-	
-	if (params->hProcess == NULL || params->hProcess == INVALID_HANDLE_VALUE)
-	{
-		SetEvent(params->hEvent);
-		return 1;
-	}
-	
-	// Clear the path buffer
-	ZeroMemory(params->exePath, sizeof(params->exePath));
-	
-	// Try to get process image file name
-	if (GetProcessImageFileName(params->hProcess, params->exePath, 1024) == 0)
-	{
-		CloseHandle(params->hProcess);
-		params->hProcess = NULL;
-		SetEvent(params->hEvent);
-		return 1;
-	}
-	
-	params->success = true;
-	SetEvent(params->hEvent);
 	return 0;
 }
 
-string &XoneKeyHelper::getFrontMostAppExecuteName()
+void XoneKeyHelper::initialize()
 {
 	InitializeProcessQueryCs();
 	
-	if (!TryEnterCriticalSection(&_processQueryCs))
-	{
-		return _exeNameUtf8;
+	if (!_watcherRunning) {
+		_hWatcherEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+		_hStopWatcherEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+		_hWatcherThread = CreateThread(NULL, 0, ProcessWatcherThreadProc, NULL, 0, NULL);
+		if (_hWatcherThread != NULL) {
+			_watcherRunning = true;
+		}
 	}
+}
+
+string XoneKeyHelper::getFrontMostAppExecuteName()
+{
+	InitializeProcessQueryCs();
+	
+	EnterCriticalSection(&_processQueryCs);
 	
 	_tempWnd = GetForegroundWindow();
 	if (_tempWnd == NULL)
 	{
+		string result = _exeNameUtf8;
 		LeaveCriticalSection(&_processQueryCs);
-		return _exeNameUtf8;
+		return result;
 	}
 	
 	GetWindowThreadProcessId(_tempWnd, &_tempProcessId);
 	if (_tempProcessId == 0)
 	{
+		string result = _exeNameUtf8;
 		LeaveCriticalSection(&_processQueryCs);
-		return _exeNameUtf8;
+		return result;
 	}
 	
 	if (_tempProcessId == _cacheProcessId)
 	{
+		string result = _exeNameUtf8;
 		LeaveCriticalSection(&_processQueryCs);
-		return _exeNameUtf8;
+		return result;
 	}
 	
-	// Query the process name synchronously
-	_proc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, _tempProcessId);
-	if (_proc == NULL) {
-		_proc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, _tempProcessId);
-	}
+	// Signal background thread to update the name
+	_pendingProcessId = _tempProcessId;
+	if (_hWatcherEvent) SetEvent(_hWatcherEvent);
 	
-	if (_proc != NULL) {
-		TCHAR path[1024];
-		if (GetProcessImageFileName(_proc, path, 1024) != 0) {
-			TCHAR* name = _tcsrchr(path, '\\');
-			if (name == NULL) name = path;
-			else name++;
-
-			// Update the global cache
-			int size_needed = WideCharToMultiByte(CP_UTF8, 0, name, (int)lstrlen(name), NULL, 0, NULL, NULL);
-			if (size_needed > 0) {
-				std::string strTo(size_needed, 0);
-				WideCharToMultiByte(CP_UTF8, 0, name, (int)lstrlen(name), &strTo[0], size_needed, NULL, NULL);
-				
-				if (strTo != "XoneKey64.exe" && strTo != "XoneKey32.exe" && strTo != "explorer.exe") {
-					_exeNameUtf8 = strTo;
-				}
-			}
-		}
-		CloseHandle(_proc);
-	}
-	
-	_cacheProcessId = _tempProcessId;
+	string result = _exeNameUtf8;
 	LeaveCriticalSection(&_processQueryCs);
-	return _exeNameUtf8;
+	return result;
 }
 
-string &XoneKeyHelper::getLastAppExecuteName()
+string XoneKeyHelper::getLastAppExecuteName()
 {
-	if (!vUseSmartSwitchKey)
-		return getFrontMostAppExecuteName();
-	return _exeNameUtf8;
+	InitializeProcessQueryCs();
+	EnterCriticalSection(&_processQueryCs);
+	string result = _exeNameUtf8;
+	LeaveCriticalSection(&_processQueryCs);
+	return result;
 }
 
 wstring XoneKeyHelper::getFullPath()
@@ -881,16 +894,30 @@ void XoneKeyHelper::StartAsyncUpdateCheck(HWND hDlg, HWND hButton)
 // Add a cleanup function to ensure memory is properly freed
 void XoneKeyHelper::cleanup()
 {
+	if (_watcherRunning) {
+		SetEvent(_hStopWatcherEvent);
+		WaitForSingleObject(_hWatcherThread, 1000); // Wait up to 1s
+		CloseHandle(_hWatcherThread);
+		_hWatcherThread = NULL;
+		CloseHandle(_hWatcherEvent);
+		_hWatcherEvent = NULL;
+		CloseHandle(_hStopWatcherEvent);
+		_hStopWatcherEvent = NULL;
+		_watcherRunning = false;
+	}
+
 	// This will be called during application shutdown
 	// Clean up any static resources here
-	static BYTE *_staticRegData = NULL;
-	if (_staticRegData)
+	if (_regData)
 	{
-		delete[] _staticRegData;
-		_staticRegData = NULL;
+		delete[] _regData;
+		_regData = NULL;
 	}
 	
 	// Clean up critical section (only if it was initialized)
-	// Note: We can't check if it's initialized, so we'll use a try-catch approach
-	// In practice, this should be called from a known initialization point
+	if (_processQueryCsInitialized)
+	{
+		DeleteCriticalSection(&_processQueryCs);
+		_processQueryCsInitialized = false;
+	}
 }

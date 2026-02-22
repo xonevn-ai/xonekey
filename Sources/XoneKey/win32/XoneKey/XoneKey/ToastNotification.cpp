@@ -149,7 +149,7 @@ void ToastNotification::Show(HWND hParent, LPCTSTR szMessage, int type, DWORD du
     
     // Create window
     hToastWnd = CreateWindowEx(
-        WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT,
+        WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW,
         L"XoneKeyToastClass",
         NULL,
         WS_POPUP,

@@ -477,8 +477,22 @@ void SystemTrayHelper::removeSystemTray()
 			{
 				break;
 			}
-			Sleep(100); // Short delay before retrying
+			Sleep(1000); // Short delay before retrying
 		}
 		nid.hWnd = NULL;
 	}
+}
+
+void SystemTrayHelper::ShowBalloon(LPCTSTR title, LPCTSTR message, DWORD iconType, DWORD timeoutMs)
+{
+	if (nid.hWnd == NULL) return;
+
+	NOTIFYICONDATA balloonNid = nid;
+	balloonNid.uFlags |= NIF_INFO;
+	balloonNid.dwInfoFlags = iconType;
+	balloonNid.uTimeout = timeoutMs;
+	wcscpy_s(balloonNid.szInfoTitle, title);
+	wcscpy_s(balloonNid.szInfo, message);
+
+	Shell_NotifyIcon(NIM_MODIFY, &balloonNid);
 }

@@ -119,6 +119,7 @@ int AppDelegate::run(HINSTANCE hInstance) {
 	PerformanceLogger::LogInfo("XoneKey application starting");
 
 	//init XoneKey Engine
+	XoneKeyHelper::initialize();
 	XoneKeyManager::initEngine();
 
 	// Start application health monitoring
@@ -246,9 +247,8 @@ void AppDelegate::onDefaultConfig() {
         mainDialog->fillData();
     }
     
-    // Show toast notification for reset
-    ToastNotification::Show(mainDialog ? mainDialog->getHwnd() : NULL, 
-                       _T("Đã khôi phục cài đặt gốc"), TOAST_SUCCESS);
+    // Show balloon notification for reset
+    SystemTrayHelper::ShowBalloon(_T("XoneKey"), _T("Đã khôi phục cài đặt gốc"), NIIF_INFO);
     
     SystemTrayHelper::updateData();
 }
@@ -260,17 +260,15 @@ void AppDelegate::onToggleVietnamese() {
         mainDialog->fillData();
     }
     
-    // Show toast notification
+    // Show balloon notification
     if (vLanguage) {
-        ToastNotification::Show(mainDialog ? mainDialog->getHwnd() : NULL, 
-                           _T("Đã bật chế độ gõ tiếng Việt"), TOAST_SUCCESS);
+        SystemTrayHelper::ShowBalloon(_T("XoneKey"), _T("Đã bật chế độ gõ tiếng Việt"), NIIF_INFO);
     } else {
-        ToastNotification::Show(mainDialog ? mainDialog->getHwnd() : NULL, 
-                           _T("Đã tắt chế độ gõ tiếng Việt"), TOAST_INFO);
+        SystemTrayHelper::ShowBalloon(_T("XoneKey"), _T("Đã tắt chế độ gõ tiếng Việt"), NIIF_INFO);
     }
     
     if (vUseSmartSwitchKey) {
-        string& exe = XoneKeyHelper::getLastAppExecuteName();
+        string exe = XoneKeyHelper::getLastAppExecuteName();
         setAppInputMethodStatus(exe, vLanguage | (vCodeTable << 1));
         saveSmartSwitchKeyData();
     }
@@ -411,6 +409,7 @@ void AppDelegate::onXoneKeyExit() {
     ToastNotification::Cleanup();
     ApplicationHealthMonitor::GetInstance()->StopMonitoring();
     XoneKeyManager::freeEngine();
+    XoneKeyHelper::cleanup();
     SystemTrayHelper::removeSystemTray();
     PostQuitMessage(0);
 }

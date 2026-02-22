@@ -27,7 +27,6 @@ ApplicationHealthMonitor::ApplicationHealthMonitor()
     , _startTime(GetTickCount())
     , _isMonitoring(false)
 {
-    InitializeCriticalSection(&_cs);
     _hStopEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 }
 
@@ -35,7 +34,6 @@ ApplicationHealthMonitor::~ApplicationHealthMonitor()
 {
     StopMonitoring();
     if (_hStopEvent) CloseHandle(_hStopEvent);
-    DeleteCriticalSection(&_cs);
 }
 
 ApplicationHealthMonitor* ApplicationHealthMonitor::GetInstance()
@@ -58,15 +56,12 @@ void ApplicationHealthMonitor::DestroyInstance()
 
 bool ApplicationHealthMonitor::StartMonitoring()
 {
-    EnterCriticalSection(&_cs);
-    
     if (_isMonitoring)
     {
-        LeaveCriticalSection(&_cs);
         return true;
     }
     
-    _lastHeartbeatTime = GetTickCount();
+    InterlockedExchange(&_lastHeartbeatTime, (LONG)GetTickCount());
     _startTime = GetTickCount();
     ResetEvent(_hStopEvent);
     
@@ -74,13 +69,11 @@ bool ApplicationHealthMonitor::StartMonitoring()
     
     if (_hThread == NULL)
     {
-        LeaveCriticalSection(&_cs);
         XoneKeyHelper::LogError("Failed to create health monitor thread");
         return false;
     }
     
     _isMonitoring = true;
-    LeaveCriticalSection(&_cs);
     
     PerformanceLogger::LogInfo("Application health monitoring thread started");
     return true;
@@ -88,16 +81,12 @@ bool ApplicationHealthMonitor::StartMonitoring()
 
 void ApplicationHealthMonitor::StopMonitoring()
 {
-    EnterCriticalSection(&_cs);
-    
     if (!_isMonitoring)
     {
-        LeaveCriticalSection(&_cs);
         return;
     }
     
     SetEvent(_hStopEvent);
-    LeaveCriticalSection(&_cs);
     
     if (_hThread)
     {
@@ -112,9 +101,8 @@ void ApplicationHealthMonitor::StopMonitoring()
 
 void ApplicationHealthMonitor::SignalHeartbeat()
 {
-    EnterCriticalSection(&_cs);
-    _lastHeartbeatTime = GetTickCount();
-    LeaveCriticalSection(&_cs);
+    // Use atomic exchange to avoid lock contention in the hook thread
+    InterlockedExchange(&_lastHeartbeatTime, (LONG)GetTickCount());
 }
 
 DWORD WINAPI ApplicationHealthMonitor::MonitorThreadProc(LPVOID lpParam)
@@ -131,55 +119,54 @@ DWORD WINAPI ApplicationHealthMonitor::MonitorThreadProc(LPVOID lpParam)
 
 void ApplicationHealthMonitor::CheckHealth()
 {
-    EnterCriticalSection(&_cs);
-    
     DWORD currentTime = GetTickCount();
+    DWORD lastHeartbeat = (DWORD)InterlockedCompareExchange(&_lastHeartbeatTime, 0, 0);
+    // If it was 0, it means no heartbeat yet, use start time
+    if (lastHeartbeat == 0) lastHeartbeat = _startTime;
+
     DWORD timeSinceLastHeartbeat = 0;
     
-    if (currentTime >= _lastHeartbeatTime)
+    if (currentTime >= lastHeartbeat)
     {
-        timeSinceLastHeartbeat = currentTime - _lastHeartbeatTime;
+        timeSinceLastHeartbeat = currentTime - lastHeartbeat;
     }
     else
     {
         // Overflow occurred
-        timeSinceLastHeartbeat = (MAXDWORD - _lastHeartbeatTime) + currentTime + 1;
+        timeSinceLastHeartbeat = (MAXDWORD - lastHeartbeat) + currentTime + 1;
     }
     
     if (timeSinceLastHeartbeat > HEARTBEAT_TIMEOUT_MS)
     {
         std::stringstream ss;
         ss << "CRITICAL: Application hang detected! No heartbeat for " 
-           << timeSinceLastHeartbeat << "ms";
+           << timeSinceLastHeartbeat << "ms (Threshold: " << HEARTBEAT_TIMEOUT_MS << "ms)";
         PerformanceLogger::LogError(ss.str());
         
         // Attempt recovery: re-initialize hooks if they might be frozen
-        // This is a last resort. In a real scenario, we might want to restart the app
-        // or signal the main thread to unfreeze.
-        PerformanceLogger::LogWarning("Attempting hook recovery...");
+        PerformanceLogger::LogWarning("Attempting hook recovery (freeEngine -> initEngine)...");
         XoneKeyManager::freeEngine();
         XoneKeyManager::initEngine();
+        
+        // Reset last heartbeat time to avoid immediate re-trigger
+        InterlockedExchange(&_lastHeartbeatTime, (LONG)GetTickCount());
     }
-    
-    LeaveCriticalSection(&_cs);
 }
 
 DWORD ApplicationHealthMonitor::GetUptime() const
 {
-    EnterCriticalSection(&_cs);
-    DWORD uptime = GetTickCount() - _startTime;
-    LeaveCriticalSection(&_cs);
-    return uptime;
+    return GetTickCount() - _startTime;
 }
 
 bool ApplicationHealthMonitor::IsHealthy() const
 {
-    EnterCriticalSection(&_cs);
     DWORD currentTime = GetTickCount();
-    DWORD timeSinceLastHeartbeat = (currentTime >= _lastHeartbeatTime) ? 
-        (currentTime - _lastHeartbeatTime) : ((MAXDWORD - _lastHeartbeatTime) + currentTime + 1);
-    bool healthy = timeSinceLastHeartbeat < HEARTBEAT_TIMEOUT_MS;
-    LeaveCriticalSection(&_cs);
-    return healthy;
+    DWORD lastHeartbeat = (DWORD)InterlockedCompareExchange((volatile LONG*)&_lastHeartbeatTime, 0, 0);
+    if (lastHeartbeat == 0) lastHeartbeat = _startTime;
+    
+    DWORD timeSinceLastHeartbeat = (currentTime >= lastHeartbeat) ? 
+        (currentTime - lastHeartbeat) : ((MAXDWORD - lastHeartbeat) + currentTime + 1);
+        
+    return timeSinceLastHeartbeat < HEARTBEAT_TIMEOUT_MS;
 }
 

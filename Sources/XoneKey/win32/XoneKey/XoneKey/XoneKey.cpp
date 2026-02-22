@@ -16,6 +16,7 @@ redistribute your new version, it MUST be open source.
 #include "PerformanceLogger.h"
 #include "XoneKeyHelper.h"
 #include "XoneKeyManager.h"
+#include "ApplicationHealthMonitor.h"
 #include <imm.h>
 
 #pragma comment(lib, "imm32")
@@ -531,6 +532,9 @@ static bool UnsetModifierMask(const Uint16& vkCode) {
 LRESULT CALLBACK keyboardHookProcess(int nCode, WPARAM wParam, LPARAM lParam) {
 	if (nCode < 0) return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
 
+	// Signal heartbeat frequently from the hook - ATOMIC (Non-blocking)
+	ApplicationHealthMonitor::GetInstance()->SignalHeartbeat();
+
 	keyboardData = (KBDLLHOOKSTRUCT *)lParam;
 	//ignore my event
 	if (keyboardData->dwExtraInfo != 0) {
@@ -545,9 +549,12 @@ LRESULT CALLBACK keyboardHookProcess(int nCode, WPARAM wParam, LPARAM lParam) {
 	}
 
 	if (_hCachedIMEWnd) {
-		LRESULT isImeON = SendMessage(_hCachedIMEWnd, WM_IME_CONTROL, IMC_GETOPENSTATUS, 0);
-		if (isImeON) {
-			return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
+		// Use SendMessageTimeout to avoid hanging if the IME window is unresponsive
+		DWORD_PTR isImeON = 0;
+		if (SendMessageTimeout(_hCachedIMEWnd, WM_IME_CONTROL, IMC_GETOPENSTATUS, 0, SMTO_ABORTIFHUNG, 100, &isImeON)) {
+			if (isImeON) {
+				return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
+			}
 		}
 	}
 	
@@ -695,6 +702,11 @@ LRESULT CALLBACK keyboardHookProcess(int nCode, WPARAM wParam, LPARAM lParam) {
 }
 
 LRESULT CALLBACK mouseHookProcess(int nCode, WPARAM wParam, LPARAM lParam) {
+	if (nCode < 0) return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
+
+	// Signal heartbeat - ATOMIC (Non-blocking)
+	ApplicationHealthMonitor::GetInstance()->SignalHeartbeat();
+
 	mouseData = (MSLLHOOKSTRUCT *)lParam;
 	switch (wParam) {
 	case WM_LBUTTONDOWN:
@@ -741,16 +753,9 @@ VOID CALLBACK winEventProcCallback(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, H
 	_lastWindowEventTime = currentTime;
 	LeaveCriticalSection(&_windowEventCs);
 	
-	// Log window event for performance tracking (non-blocking, only in debug builds)
-	// Removed from release to avoid blocking hook thread with file I/O
-	#ifdef _DEBUG
-	PerformanceLogger::LogWindowEvent();
-	PERF_TIMER("winEventProcCallback");
-	#endif
-	
 	//smart switch key
 	if (vUseSmartSwitchKey || vRememberCode) {
-		string& exe = XoneKeyHelper::getFrontMostAppExecuteName();
+		string exe = XoneKeyHelper::getFrontMostAppExecuteName();
 		if (exe.compare("explorer.exe") == 0) //dont apply with windows explorer
 			return;
 		_languageTemp = getAppInputMethodStatus(exe, vLanguage | (vCodeTable << 1));

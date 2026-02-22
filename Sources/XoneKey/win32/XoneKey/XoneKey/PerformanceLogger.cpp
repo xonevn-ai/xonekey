@@ -72,8 +72,11 @@ void PerformanceLogger::WriteLog(LogLevel level, const std::string& message)
     strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
     
     // Write log entry
-    logFile << "[" << buffer << "] [" << GetLogLevelString(level) << "] " 
-            << message << std::endl;
+    std::string logEntry = "[" + std::string(buffer) + "] [" + GetLogLevelString(level) + "] " + message + "\n";
+    logFile << logEntry;
+    
+    // Also output to debug console for IDE visibility
+    OutputDebugStringA(logEntry.c_str());
     
     logFile.close();
     LeaveCriticalSection(&_cs);

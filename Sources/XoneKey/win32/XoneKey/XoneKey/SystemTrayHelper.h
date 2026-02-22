@@ -25,5 +25,6 @@ public:
 	static void createSystemTrayIcon(const HINSTANCE& hIns);
 	static void updateData();
 	static void removeSystemTray();
+	static void ShowBalloon(LPCTSTR title, LPCTSTR message, DWORD iconType = NIIF_INFO, DWORD timeoutMs = 3000);
 };
 

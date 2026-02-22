@@ -15,10 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Settings profiles
 - Enhanced macro system with templates
 
-## [1.0.4] - 2026-02-22
+## [1.0.5] - 2026-02-22
+### Added
+- **High-Responsiveness Hooks**: Completely non-blocking keyboard and mouse hooks with atomic heartbeat signaling.
+- **Native System Notifications**: Replaced custom toasts with native Windows Balloon Tips for a more integrated UX.
+- **Taskbar Privacy**: Toasts now use `WS_EX_TOOLWINDOW` to stay off the taskbar.
+
 ### Fixed
-- Fixed window switching lag.
-- UI improvements and brand synchronization.
+- Fixed application hangs during rapid typing or window switching.
+- Resolved race conditions in process name resolution.
+
+## [1.0.4] - 2026-02-22
 
 ## [1.0.2] - 2026-02-22
 
@@ -281,7 +288,9 @@ Special thanks to all contributors who helped improve XoneKey!
 
 ---
 
-[Unreleased]: https://github.com/xonevn-ai/xonekey/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/xonevn-ai/xonekey/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/xonevn-ai/xonekey/compare/v1.0.4...v1.0.5
+[1.0.4]: https://github.com/xonevn-ai/xonekey/compare/v1.0.2...v1.0.4
 [1.0.2]: https://github.com/xonevn-ai/xonekey/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/xonevn-ai/xonekey/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/xonevn-ai/xonekey/releases/tag/v1.0.0

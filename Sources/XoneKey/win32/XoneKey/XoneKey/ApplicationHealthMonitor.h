@@ -24,10 +24,9 @@ private:
     static ApplicationHealthMonitor* _instance;
     HANDLE _hThread;
     HANDLE _hStopEvent;
-    DWORD _lastHeartbeatTime;
+    volatile LONG _lastHeartbeatTime;
     DWORD _startTime;
     bool _isMonitoring;
-    mutable CRITICAL_SECTION _cs;
     
     enum {
         CHECK_INTERVAL_MS = 5000,      // Check every 5 seconds
