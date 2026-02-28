@@ -5,15 +5,20 @@ All notable changes to XoneKey will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.6] - 2026-02-28
+### Added
+- **Manual Restart**: Added "Khởi động lại" (Restart) to the system tray menu for manual recovery.
+- **Enhanced Error Notifications**: Thread-safe toast alerts for recovery status and hook failures.
+- **Improved Logging**: More detailed logs for health monitor and recovery events.
 
-### Planned
-- Linux application support
-- Cloud sync (optional)
-- Custom themes
-- Advanced text prediction
-- Settings profiles
-- Enhanced macro system with templates
+### Fixed
+- **Idle Hangs**: Fixed false positive "hang" detection during inactivity via 30s wake-up timer.
+- **Recovery Stability**: Moved hook re-initialization to the UI thread, resolving non-functioning typing after recovery.
+- **Private Access**: Fixed compilation errors related to `AppDelegate` encapsulation.
+
+### Changed
+- **CI/CD Optimization**: Refined GitHub workflow to correctly name x86/x64 binaries and include the updater.
+- **Code Consolidaton**: Centralized application messages and main thread tracking in `AppDelegate.h`.
 
 ## [1.0.5] - 2026-02-22
 ### Added

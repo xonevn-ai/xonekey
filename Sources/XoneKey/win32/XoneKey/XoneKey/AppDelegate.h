@@ -18,6 +18,11 @@ redistribute your new version, it MUST be open source.
 #include "ConvertToolDialog.h"
 #include "MacroDialog.h"
 
+#define WM_APP_RECOVER_HOOKS (WM_APP + 100)
+#define WM_APP_SHOW_ERROR (WM_APP + 101)
+
+extern DWORD g_mainThreadId;
+
 class BaseDialog;
 class AppDelegate {
 private:
@@ -31,6 +36,7 @@ public:
 	static AppDelegate* getInstance();
 	int run(HINSTANCE hInstance);
 	void createMainDialog();
+	HWND getMainDialogHwnd() const;
 	void closeDialog(BaseDialog* dialog);
 public: //event
 	void onInputMethodChangedFromHotKey(bool showToast = true);
@@ -50,5 +56,6 @@ public: //event
 
 	void onControlPanel();
 	void onXoneKeyAbout();
+	void onXoneKeyRestart();
 	void onXoneKeyExit();
 };

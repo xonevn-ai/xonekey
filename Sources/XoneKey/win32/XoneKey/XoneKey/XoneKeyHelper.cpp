@@ -921,3 +921,16 @@ void XoneKeyHelper::cleanup()
 		_processQueryCsInitialized = false;
 	}
 }
+
+#include "AppDelegate.h"
+
+void XoneKeyHelper::NotifyUserOfError(const std::wstring& message)
+{
+	if (g_mainThreadId == 0) return;
+
+	std::wstring* pMsg = new std::wstring(message);
+	if (!PostThreadMessage(g_mainThreadId, WM_APP_SHOW_ERROR, 0, (LPARAM)pMsg))
+	{
+		delete pMsg;
+	}
+}

@@ -16,7 +16,6 @@ class ToastNotification {
 private:
     static HWND hToastWnd;
     static UINT_PTR timerID;
-    static HBRUSH hBgBrush;
     static WCHAR message[256];
     static int toastType;
 

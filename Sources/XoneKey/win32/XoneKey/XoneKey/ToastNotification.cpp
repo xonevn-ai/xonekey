@@ -3,7 +3,6 @@
 
 HWND ToastNotification::hToastWnd = NULL;
 UINT_PTR ToastNotification::timerID = 0;
-HBRUSH ToastNotification::hBgBrush = NULL;
 WCHAR ToastNotification::message[256] = { 0 };
 int ToastNotification::toastType = TOAST_INFO;
 
@@ -39,52 +38,68 @@ LRESULT CALLBACK ToastNotification::ToastWndProc(HWND hwnd, UINT msg, WPARAM wPa
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
         
-        // Get client rect
         RECT rc;
         GetClientRect(hwnd, &rc);
-        
-        // Set background color based on type
-        COLORREF bgColor;
+        int width = rc.right - rc.left;
+        int height = rc.bottom - rc.top;
+
+        // --- Oversampled Rendering (2x) ---
+        HDC memDC = CreateCompatibleDC(hdc);
+        HBITMAP memBitmap = CreateCompatibleBitmap(hdc, width * 2, height * 2);
+        HGDIOBJ hOldBitmap = SelectObject(memDC, memBitmap);
+
+        // Fill transparent-ish base (though we have SetWindowRgn)
+        HBRUSH hClearBrush = CreateSolidBrush(RGB(0, 0, 0));
+        RECT rcFull = { 0, 0, width * 2, height * 2 };
+        FillRect(memDC, &rcFull, hClearBrush);
+        DeleteObject(hClearBrush);
+
+        // Set colors based on type
+        COLORREF bgColor, borderColor;
         switch (toastType) {
-        case TOAST_SUCCESS:
-            bgColor = RGB(76, 175, 80);
-            break;
-        case TOAST_WARNING:
-            bgColor = RGB(255, 152, 0);
-            break;
-        case TOAST_ERROR:
-            bgColor = RGB(244, 67, 54);
-            break;
+        case TOAST_SUCCESS: bgColor = RGB(39, 174, 96); borderColor = RGB(30, 132, 73); break;
+        case TOAST_WARNING: bgColor = RGB(243, 156, 18); borderColor = RGB(175, 110, 11); break;
+        case TOAST_ERROR:   bgColor = RGB(192, 57, 43); borderColor = RGB(146, 43, 33); break;
         case TOAST_INFO:
-        default:
-            bgColor = RGB(33, 150, 243);
-            break;
+        default:            bgColor = RGB(41, 128, 185); borderColor = RGB(21, 67, 96); break;
         }
-        
-        if (hBgBrush) DeleteObject(hBgBrush);
-        hBgBrush = CreateSolidBrush(bgColor);
-        
-        // Fill background
-        FillRect(hdc, &rc, hBgBrush);
-        
-        // Draw text
-        SetBkMode(hdc, TRANSPARENT);
-        SetTextColor(hdc, RGB(255, 255, 255));
-        
-        // Use a nicer font
-        HFONT hFont = CreateFont(18, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+
+        HBRUSH hBrush = CreateSolidBrush(bgColor);
+        HPEN hPen = CreatePen(PS_SOLID, 2, borderColor); // Thicker pen for 2x
+        HGDIOBJ hOldMemBrush = SelectObject(memDC, hBrush);
+        HGDIOBJ hOldMemPen = SelectObject(memDC, hPen);
+
+        // Draw pill at 2x scale
+        int radius = height * 2;
+        RoundRect(memDC, 0, 0, width * 2, height * 2, radius, radius);
+
+        // Draw text at 2x scale
+        SetBkMode(memDC, TRANSPARENT);
+        SetTextColor(memDC, RGB(255, 255, 255));
+        HFONT hFont = CreateFont(34, 0, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE,
             ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
             DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI");
-        
-        HFONT hOldFont = (HFONT)SelectObject(hdc, hFont);
-        
-        // Draw text centered
-        DrawText(hdc, message, -1, &rc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-        
-        // Clean up
-        SelectObject(hdc, hOldFont);
+        HGDIOBJ hOldMemFont = SelectObject(memDC, hFont);
+
+        RECT rcText = { 0, 0, width * 2, height * 2 };
+        DrawText(memDC, message, -1, &rcText, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+        // --- Downscale to Window DC (HALFTONE for smooth edges) ---
+        SetStretchBltMode(hdc, HALFTONE);
+        SetBrushOrgEx(hdc, 0, 0, NULL);
+        StretchBlt(hdc, 0, 0, width, height, memDC, 0, 0, width * 2, height * 2, SRCCOPY);
+
+        // Cleanup
+        SelectObject(memDC, hOldMemFont);
         DeleteObject(hFont);
-        
+        SelectObject(memDC, hOldMemBrush);
+        SelectObject(memDC, hOldMemPen);
+        DeleteObject(hBrush);
+        DeleteObject(hPen);
+        SelectObject(memDC, hOldBitmap);
+        DeleteObject(memBitmap);
+        DeleteDC(memDC);
+
         EndPaint(hwnd, &ps);
         return 0;
     }
@@ -92,10 +107,6 @@ LRESULT CALLBACK ToastNotification::ToastWndProc(HWND hwnd, UINT msg, WPARAM wPa
     case WM_DESTROY:
         KillTimer(hwnd, timerID);
         timerID = 0;
-        if (hBgBrush) {
-            DeleteObject(hBgBrush);
-            hBgBrush = NULL;
-        }
         return 0;
     }
 
@@ -118,47 +129,38 @@ void ToastNotification::Show(HWND hParent, LPCTSTR szMessage, int type, DWORD du
     
     // If already showing, just update
     if (hToastWnd != NULL && IsWindow(hToastWnd)) {
-        // Update timer
         SetTimer(duration);
-        
-        // Force repaint
         InvalidateRect(hToastWnd, NULL, TRUE);
         return;
     }
     
-    // Get parent rect
-    RECT rcParent;
-    if (hParent) {
-        GetWindowRect(hParent, &rcParent);
-    }
-    else {
-        // Use desktop
-        rcParent.left = 0;
-        rcParent.top = 0;
-        rcParent.right = GetSystemMetrics(SM_CXSCREEN);
-        rcParent.bottom = GetSystemMetrics(SM_CYSCREEN);
-    }
-    
     // Calculate size
-    int width = 300;
-    int height = 50;
+    int width = 260;
+    int height = 40;
     
-    // Calculate position (centered at bottom of parent)
-    int x = rcParent.left + (rcParent.right - rcParent.left - width) / 2;
-    int y = rcParent.bottom - height - 20; // 20px margin
+    // Screen positioning (Bottom-Center, 80px from bottom)
+    int x = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;
+    int y = GetSystemMetrics(SM_CYSCREEN) - height - 80;
     
     // Create window
     hToastWnd = CreateWindowEx(
         WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW,
         L"XoneKeyToastClass",
         NULL,
-        WS_POPUP,
+        WS_POPUP | WS_VISIBLE,
         x, y, width, height,
         NULL, NULL, GetModuleHandle(NULL), NULL
     );
     
+    // Fix: CreateWindowEx with WS_POPUP needs WS_VISIBLE or ShowWindow
+    // But we use AnimateWindow, so let's keep it clean.
+    
+    // Set pill region
+    HRGN hRgn = CreateRoundRectRgn(0, 0, width, height, height, height);
+    SetWindowRgn(hToastWnd, hRgn, TRUE);
+    
     // Set transparency
-    SetLayeredWindowAttributes(hToastWnd, 0, 230, LWA_ALPHA); // 90% opacity
+    SetLayeredWindowAttributes(hToastWnd, 0, 235, LWA_ALPHA);
     
     // Show with animation
     AnimateWindow(hToastWnd, 200, AW_BLEND);
@@ -183,8 +185,4 @@ void ToastNotification::Hide() {
 
 void ToastNotification::Cleanup() {
     Hide();
-    if (hBgBrush) {
-        DeleteObject(hBgBrush);
-        hBgBrush = NULL;
-    }
 }

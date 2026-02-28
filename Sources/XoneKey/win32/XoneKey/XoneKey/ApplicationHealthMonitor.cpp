@@ -16,6 +16,7 @@ redistribute your new version, it MUST be open source.
 #include "XoneKeyHelper.h"
 #include "PerformanceLogger.h"
 #include "XoneKeyManager.h"
+#include "AppDelegate.h"
 #include <sstream>
 
 ApplicationHealthMonitor* ApplicationHealthMonitor::_instance = nullptr;
@@ -143,13 +144,32 @@ void ApplicationHealthMonitor::CheckHealth()
            << timeSinceLastHeartbeat << "ms (Threshold: " << HEARTBEAT_TIMEOUT_MS << "ms)";
         PerformanceLogger::LogError(ss.str());
         
-        // Attempt recovery: re-initialize hooks if they might be frozen
-        PerformanceLogger::LogWarning("Attempting hook recovery (freeEngine -> initEngine)...");
-        XoneKeyManager::freeEngine();
-        XoneKeyManager::initEngine();
+        // Attempt recovery: re-initialize hooks by signaling the main UI thread
+        // We must do this on the UI thread because hooks require a message loop
+        PerformanceLogger::LogWarning("Requesting hook recovery on UI thread via message...");
+        
+        // Since we don't have a reliable way to get main thread ID easily without adding it,
+        // let's use the AppDelegate's main thread if possible, or post to the main window.
+        // Actually, we can store the main thread ID in AppDelegate during startup.
+        
+        // Alternative: find the main window and post to it
+        HWND hWnd = NULL;
+        if (AppDelegate::getInstance()) {
+            hWnd = AppDelegate::getInstance()->getMainDialogHwnd();
+        }
+        
+        
+        if (hWnd) {
+            PostMessage(hWnd, WM_APP_RECOVER_HOOKS, 0, 0);
+        } else if (g_mainThreadId != 0) {
+            PostThreadMessage(g_mainThreadId, WM_APP_RECOVER_HOOKS, 0, 0);
+        } else {
+            PerformanceLogger::LogError("Recovery failed: Main window and thread ID not found");
+            XoneKeyHelper::NotifyUserOfError(L"Lỗi: Không thể tự động khôi phục bộ gõ. Vui lòng khởi động lại ứng dụng.");
+        }
         
         // Reset last heartbeat time to avoid immediate re-trigger
-        InterlockedExchange(&_lastHeartbeatTime, (LONG)GetTickCount());
+        SignalHeartbeat();
     }
 }
 

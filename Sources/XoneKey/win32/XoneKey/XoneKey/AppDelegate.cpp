@@ -24,6 +24,7 @@ redistribute your new version, it MUST be open source.
 #include "AboutDialog.h"
 
 static AppDelegate* _instance;
+DWORD g_mainThreadId = 0;
 
 //see document in Engine.h
 int vLanguage = 1;
@@ -105,6 +106,7 @@ AppDelegate * AppDelegate::getInstance() {
 
 int AppDelegate::run(HINSTANCE hInstance) {
 	this->hInstance = hInstance;
+	g_mainThreadId = GetCurrentThreadId();
 
 	//check app has already run or not
 	HWND previousInstance = FindWindow(APP_CLASS, NULL);
@@ -145,12 +147,47 @@ int AppDelegate::run(HINSTANCE hInstance) {
 		}
 	}
 
+#define APP_TIMER_HEARTBEAT 1001
+
 	MSG msg;
+	// Create a periodic timer to wake up the message loop every 30 seconds
+	// This prevents false positive heartbeat timeouts when there's no user activity
+	SetTimer(NULL, APP_TIMER_HEARTBEAT, 30000, NULL);
+
 	// Main message loop:
 	while (GetMessage(&msg, nullptr, 0, 0))	{
 		// Signal heartbeat for health monitoring
 		ApplicationHealthMonitor::GetInstance()->SignalHeartbeat();
 		
+		if (msg.message == WM_TIMER && msg.wParam == APP_TIMER_HEARTBEAT) {
+			// Timer message just to wake up GetMessage, nothing to do
+			continue;
+		}
+
+		if (msg.message == WM_APP_RECOVER_HOOKS) {
+			PerformanceLogger::LogWarning("Executing hook recovery on UI thread...");
+			XoneKeyManager::freeEngine();
+			XoneKeyManager::initEngine();
+			
+			// Reset heartbeat timer in the monitor to avoid immediate re-trigger
+			ApplicationHealthMonitor::GetInstance()->SignalHeartbeat();
+
+			// Show toast to acknowledge recovery to user
+			ToastNotification::Show(mainDialog ? mainDialog->getHwnd() : NULL, 
+							   _T("Hệ thống vừa tự động khôi phục bộ gõ để đảm bảo ổn định."), TOAST_INFO);
+			continue;
+		}
+
+		if (msg.message == WM_APP_SHOW_ERROR) {
+			std::wstring* pMsg = (std::wstring*)msg.lParam;
+			if (pMsg) {
+				ToastNotification::Show(mainDialog ? mainDialog->getHwnd() : NULL, 
+								   pMsg->c_str(), TOAST_ERROR, TOAST_DURATION_LONG);
+				delete pMsg;
+			}
+			continue;
+		}
+
 		if (msg.message == WM_KEYDOWN) {
 			XoneKeyManager::_lastKeyCode = (UINT16)msg.wParam;
 		}
@@ -161,10 +198,15 @@ int AppDelegate::run(HINSTANCE hInstance) {
 	}
 	
 	// Cleanup
+	KillTimer(NULL, APP_TIMER_HEARTBEAT);
 	ApplicationHealthMonitor::DestroyInstance();
 	PerformanceLogger::LogInfo("XoneKey application shutting down");
 	
 	return 0;
+}
+
+HWND AppDelegate::getMainDialogHwnd() const {
+	return mainDialog ? mainDialog->getHwnd() : NULL;
 }
 
 void AppDelegate::createMainDialog() {
@@ -401,6 +443,13 @@ void AppDelegate::onXoneKeyAbout() {
 	} else {
 		aboutDialog->bringOnTop();
 	}
+}
+
+void AppDelegate::onXoneKeyRestart() {
+	PerformanceLogger::LogInfo("XoneKey restart requested by user");
+	wstring path = XoneKeyHelper::getFullPath();
+	ShellExecute(NULL, L"open", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	onXoneKeyExit();
 }
 
 // Clean up toast resources on exit

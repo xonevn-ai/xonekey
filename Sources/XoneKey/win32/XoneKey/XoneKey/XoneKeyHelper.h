@@ -66,6 +66,7 @@ public:
 	static void cleanup();
 
 	static wstring getContentOfUrl(LPCTSTR url);
+	static void NotifyUserOfError(const std::wstring& message);
 };
 
 DWORD WINAPI SimpleCheckUpdateThreadProc(LPVOID lpParam);

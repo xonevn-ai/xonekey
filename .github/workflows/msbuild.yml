@@ -51,12 +51,14 @@ jobs:
         New-Item -ItemType Directory -Path "dist" -Force
         
         # Copy binaries to dist with correct names
-        if (Test-Path "$ReleaseDir/XoneKey32.exe") {
-            Copy-Item -Path "$ReleaseDir/XoneKey32.exe" -Destination "dist/XoneKey32.exe"
-            Copy-Item -Path "$ReleaseDir/XoneKeyUpdater.exe" -Destination "dist/XoneKeyUpdate.exe"
+        if (Test-Path "$ReleaseDir/XoneKey.exe") {
+            Copy-Item -Path "$ReleaseDir/XoneKey.exe" -Destination "dist/XoneKey32.exe"
+            if (Test-Path "$ReleaseDir/XoneKeyUpdater.exe") {
+                Copy-Item -Path "$ReleaseDir/XoneKeyUpdater.exe" -Destination "dist/XoneKeyUpdate.exe"
+            }
         }
-        if (Test-Path "$x64ReleaseDir/XoneKey64.exe") {
-            Copy-Item -Path "$x64ReleaseDir/XoneKey64.exe" -Destination "dist/XoneKey64.exe"
+        if (Test-Path "$x64ReleaseDir/XoneKey.exe") {
+            Copy-Item -Path "$x64ReleaseDir/XoneKey.exe" -Destination "dist/XoneKey64.exe"
         }
         
         # Zip using 7z (available on GH runners)

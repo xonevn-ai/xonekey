@@ -186,6 +186,14 @@ void XoneKeyInit() {
 	hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, keyboardHookProcess, hInstance, 0);
 	hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, mouseHookProcess, hInstance, 0);
 	hSystemEvent = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, NULL, winEventProcCallback, 0, 0, WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
+
+	if (!hKeyboardHook || !hMouseHook) {
+		PerformanceLogger::LogError("Failed to install low-level hooks!");
+		XoneKeyHelper::NotifyUserOfError(L"Lỗi: Không thể thiết lập bộ gõ. Vui lòng thử chạy với quyền Admin.");
+	}
+	if (!hSystemEvent) {
+		PerformanceLogger::LogWarning("Failed to install system event hook (Smart Switch Key might not work)");
+	}
 }
 
 void saveSmartSwitchKeyData() {
