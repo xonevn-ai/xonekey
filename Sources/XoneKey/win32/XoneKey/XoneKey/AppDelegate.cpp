@@ -73,10 +73,11 @@ bool AppDelegate::isDialogMsg(MSG & msg) const {
 void AppDelegate::checkUpdate() {
 	string newVersion;
 	if (XoneKeyManager::checkUpdate(newVersion)) {
-		WCHAR msg[256];
+		WCHAR msg[512];
 		wsprintf(msg,
-			TEXT("XoneKey Có phiên bản mới (%s), bạn có muốn cập nhật không?"),
-			utf8ToWideString(newVersion).c_str());
+			TEXT("Phiên bản mới: %s đã sẵn sàng (hiện tại: %s). Bạn có muốn cập nhật không?"),
+			utf8ToWideString(newVersion).c_str(),
+			XoneKeyHelper::getVersionString().c_str());
 
 		int msgboxID = MessageBox(
 			0,
@@ -111,7 +112,7 @@ int AppDelegate::run(HINSTANCE hInstance) {
 	//check app has already run or not
 	HWND previousInstance = FindWindow(APP_CLASS, NULL);
 	if (previousInstance) {
-		MessageBeep(MB_OK);
+		MessageBeep(MB_ICONEXCLAMATION);
 		SendMessage(previousInstance, WM_USER + 2019, 0, 0);
 		PostQuitMessage(0);
 		return 0;
@@ -134,7 +135,6 @@ int AppDelegate::run(HINSTANCE hInstance) {
 	//create main control
 	if (vShowOnStartUp)
 		createMainDialog();
-	MessageBeep(MB_OK);
 
 	//check update - moved to background to prevent blocking
 	if (vCheckNewVersion)

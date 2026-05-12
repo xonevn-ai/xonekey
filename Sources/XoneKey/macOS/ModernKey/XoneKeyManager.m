@@ -215,7 +215,7 @@ static CFRunLoopSourceRef runLoopSource;
 +(void)checkNewVersion:(NSWindow*)parent callbackFunc:(CheckNewVersionCallback) callback {
     //load new version config
     NSURLSession *aSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    [[aSession dataTaskWithURL:[NSURL URLWithString:@"https://raw.githubusercontent.com/xonevn-ai/xonekey/master/version.json"] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [[aSession dataTaskWithURL:[NSURL URLWithString:@"https://raw.githubusercontent.com/xonevn-ai/xonekey/main/version.json"] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (((NSHTTPURLResponse *)response).statusCode == 200) {
             if (data) {
                 if(NSClassFromString(@"NSJSONSerialization")) {
@@ -256,14 +256,16 @@ static CFRunLoopSourceRef runLoopSource;
 
 +(void)showUpdateMessage:(NSWindow*)parent needUpdating:(BOOL)needUpdating newVersion:(NSString*)versionString {
     NSAlert *alert = [[NSAlert alloc] init];
-    [alert setMessageText:(needUpdating ? [NSString stringWithFormat:@"XoneKey Có phiên bản mới (%@), bạn có muốn cập nhật không?", versionString] : @"Bạn đang dùng phiên bản mới nhất!")];
-    [alert setInformativeText:(needUpdating ? @"Bấm 'Có' để cập nhật XoneKey." : @"")];
-    
-    if (!needUpdating) {
-        [alert addButtonWithTitle:@"OK"];
+    if (needUpdating) {
+        NSString *currentVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+        [alert setMessageText:@"Có bản cập nhật mới!"];
+        [alert setInformativeText:[NSString stringWithFormat:@"Phiên bản của bạn: %@ → Phiên bản mới: %@", currentVersion, versionString]];
+        [alert addButtonWithTitle:@"Cập nhật ngay"];
+        [alert addButtonWithTitle:@"Để sau"];
     } else {
-        [alert addButtonWithTitle:@"Có"];
-        [alert addButtonWithTitle:@"Không"];
+        [alert setMessageText:@"Bạn đang dùng phiên bản mới nhất!"];
+        [alert setInformativeText:@""];
+        [alert addButtonWithTitle:@"OK"];
     }
     if (parent == nil) {
         [alert.window makeKeyAndOrderFront:nil];

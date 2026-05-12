@@ -214,7 +214,10 @@ extern bool convertToolDontAlertWhenCompleted;
     [theMenu addItemWithTitle:@"Gõ tắt..." action:@selector(onMacroSelected) keyEquivalent:@""];
     [theMenu addItemWithTitle:@"Giới thiệu" action:@selector(onAboutSelected) keyEquivalent:@""];
     [theMenu addItem:[NSMenuItem separatorItem]];
-    
+
+    NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    NSMenuItem *versionItem = [theMenu addItemWithTitle:[NSString stringWithFormat:@"XoneKey v%@", appVersion] action:nil keyEquivalent:@""];
+    [versionItem setEnabled:NO];
     [theMenu addItemWithTitle:@"Thoát" action:@selector(terminate:) keyEquivalent:@"q"];
     
     
