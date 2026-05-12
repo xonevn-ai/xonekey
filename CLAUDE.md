@@ -91,15 +91,16 @@ linux/                         ← skeleton only; GTK/X11/Wayland TBD
 
 These are non-negotiable constraints; violating them breaks safety guarantees or cross-platform builds.
 
-### 1. Always use EngineSafety helpers for buffer access
+### 1. Always bounds-check engine buffer access
+All engine arrays are bounded by `MAX_BUFF = 32`. Use the helpers in `EngineSafety.h` (`IsValidIndex`, `IsIndexInWord`, `SafeIncrementIndex`, `SafeDecrementIndex`, `SafeSetKeyState`) instead of raw indexing:
 ```cpp
 // WRONG
-char c = TypingWord[index];
+TypingWord[++_index] = data;
 
 // RIGHT
-char c = SafeGetTypingWord(TypingWord, index, currentIndex);
+if (SafeIncrementIndex(&_index)) TypingWord[_index] = data;
 ```
-All engine arrays are bounded by `MAX_BUFF = 32`. Never use raw pointer arithmetic or unchecked indexing.
+Never use raw pointer arithmetic or unchecked indexing on `TypingWord`, `KeyStates`, or the macro buffers.
 
 ### 2. Engine must stay platform-free
 The engine may only `#include` standard C++ headers and `platforms/win32.h|mac.h|linux.h` (key-code macros only). No `<windows.h>`, `<Cocoa/Cocoa.h>`, or X11 headers inside `engine/`.

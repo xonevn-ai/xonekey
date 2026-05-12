@@ -9,9 +9,11 @@
 #include <algorithm>
 #include "Engine.h"
 #include "EngineSafety.h"
-#include <string.h>
+#include <cstring>
 #include <list>
 #include "Macro.h"
+
+using namespace std;
 
 static vector<Uint8> _charKeyCode = {
     KEY_BACKQUOTE, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0, KEY_MINUS, KEY_EQUALS,

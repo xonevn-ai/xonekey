@@ -11,7 +11,9 @@
 #include "ConvertTool.h"
 #include "Engine.h"
 #include <iostream>
-#include <memory.h>
+#include <cstring>
+
+using namespace std;
 
 //option
 bool convertToolDontAlertWhenCompleted = false;

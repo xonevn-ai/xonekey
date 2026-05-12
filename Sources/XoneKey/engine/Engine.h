@@ -11,6 +11,7 @@
 
 #include <locale>
 #include <codecvt>
+#include <string>
 
 #include "DataType.h"
 #include "Vietnamese.h"
@@ -241,7 +242,7 @@ void vTempOffEngine(const bool& off=true);
 /**
  * some utils function
  */
-wstring utf8ToWideString(const string& str);
-string wideStringToUtf8(const wstring& str);
+std::wstring utf8ToWideString(const std::string& str);
+std::string wideStringToUtf8(const std::wstring& str);
 
 #endif /* Engine_h */

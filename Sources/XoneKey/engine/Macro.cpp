@@ -233,7 +233,10 @@ bool findMacro(vector<Uint32>& key, vector<Uint32>& macroContentCode) {
                     if (c == 0 || _macroFlag) {
                         _kChar = keyCodeToCharacter(macroContentCode[c]);
                         if (_kChar != 0) {
-                            _kChar = toupper(_kChar);
+                            // _characterMap only contains ASCII keys, so _kChar
+                            // fits in unsigned char — cast keeps toupper() in defined
+                            // territory and silences -Wsign-conversion.
+                            _kChar = (Uint16)toupper((unsigned char)_kChar);
                             macroContentCode[c] = _characterMap[_kChar];
                             continue;
                         }

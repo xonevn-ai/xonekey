@@ -12,6 +12,8 @@
 #import "AppDelegate.h"
 #import "ViewController.h"
 
+using namespace std;
+
 // Inline functions instead of macros for better maintainability and type safety
 
 // Get frontmost application bundle identifier

@@ -9,6 +9,8 @@
 #import "MacroViewController.h"
 #include "Engine.h"
 
+using namespace std;
+
 #define MACRO_ADD_TEXT @"Thêm"
 #define MACRO_EDIT_TEXT @"Sửa"
 

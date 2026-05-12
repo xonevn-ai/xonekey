@@ -9,7 +9,9 @@
 #include "SmartSwitchKey.h"
 #include <map>
 #include <iostream>
-#include <memory.h>
+#include <cstring>
+
+using namespace std;
 
 //main data, i use `map` because it has O(Log(n))
 static map<string, Int8> _smartSwitchKeyData;
