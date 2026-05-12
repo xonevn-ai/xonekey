@@ -48,6 +48,19 @@ static inline Uint32 GetDynaData(bool isMacro, int pos, vKeyHookState* data) {
 
 // Constants
 static const int MAX_UNICODE_STRING = 20;
+
+// vSwitchKeyStatus / convertToolHotKey bit layout:
+//   bits  0- 7 : keycode (read by the hook via GET_SWITCH_KEY)
+//   bit      8 : Control modifier   (HAS_CONTROL)
+//   bit      9 : Option/Alt         (HAS_OPTION)
+//   bit     10 : Command/Win        (HAS_COMMAND)
+//   bit     11 : Shift              (HAS_SHIFT)
+//   bit     15 : Beep on toggle     (HAS_BEEP)
+//   bits 24-31 : keycode mirror     (read by the settings UI for display)
+// The keycode is intentionally written to *both* bits 0-7 and bits 24-31 so
+// that EMPTY_HOTKEY (= SWITCH_KEY_UNSET in both locations, all flags clear)
+// is a single 32-bit value the hook can compare against in one operation.
+static const Uint8 SWITCH_KEY_UNSET = 0xFE;
 static const int EMPTY_HOTKEY = 0xFE0000FE;
 
 // Load data from NSUserDefaults with validation
@@ -535,13 +548,13 @@ extern "C" {
     bool checkHotKey(int hotKeyData, bool checkKeyCode=true) {
         if ((hotKeyData & (~0x8000)) == EMPTY_HOTKEY)
             return false;
-        if (HAS_CONTROL(hotKeyData) ^ GET_BOOL(_lastFlag & kCGEventFlagMaskControl))
+        if (HAS_CONTROL(hotKeyData) != GET_BOOL(_lastFlag & kCGEventFlagMaskControl))
             return false;
-        if (HAS_OPTION(hotKeyData) ^ GET_BOOL(_lastFlag & kCGEventFlagMaskAlternate))
+        if (HAS_OPTION(hotKeyData) != GET_BOOL(_lastFlag & kCGEventFlagMaskAlternate))
             return false;
-        if (HAS_COMMAND(hotKeyData) ^ GET_BOOL(_lastFlag & kCGEventFlagMaskCommand))
+        if (HAS_COMMAND(hotKeyData) != GET_BOOL(_lastFlag & kCGEventFlagMaskCommand))
             return false;
-        if (HAS_SHIFT(hotKeyData) ^ GET_BOOL(_lastFlag & kCGEventFlagMaskShift))
+        if (HAS_SHIFT(hotKeyData) != GET_BOOL(_lastFlag & kCGEventFlagMaskShift))
             return false;
         if (checkKeyCode) {
             if (GET_SWITCH_KEY(hotKeyData) != _keycode)
@@ -633,17 +646,19 @@ extern "C" {
         }
         
         //switch language shortcut; convert hotkey
+        const Uint16 switchKey  = GET_SWITCH_KEY(vSwitchKeyStatus);
+        const Uint16 convertKey = GET_SWITCH_KEY(convertToolHotKey);
         if (type == kCGEventKeyDown) {
-            if (GET_SWITCH_KEY(vSwitchKeyStatus) != _keycode && GET_SWITCH_KEY(convertToolHotKey) != _keycode) {
+            if (switchKey != _keycode && convertKey != _keycode) {
                 _lastFlag = 0;
             } else {
-                if (GET_SWITCH_KEY(vSwitchKeyStatus) == _keycode && checkHotKey(vSwitchKeyStatus, GET_SWITCH_KEY(vSwitchKeyStatus) != 0xFE)){
+                if (switchKey != SWITCH_KEY_UNSET && switchKey == _keycode && checkHotKey(vSwitchKeyStatus)) {
                     switchLanguage();
                     _lastFlag = 0;
                     _hasJustUsedHotKey = true;
                     return NULL;
                 }
-                if (GET_SWITCH_KEY(convertToolHotKey) == _keycode && checkHotKey(convertToolHotKey, GET_SWITCH_KEY(convertToolHotKey) != 0xFE)){
+                if (convertKey != SWITCH_KEY_UNSET && convertKey == _keycode && checkHotKey(convertToolHotKey)) {
                     [appDelegate onQuickConvert];
                     _lastFlag = 0;
                     _hasJustUsedHotKey = true;
@@ -655,14 +670,16 @@ extern "C" {
             if (_lastFlag == 0 || _lastFlag < _flag) {
                 _lastFlag = _flag;
             } else if (_lastFlag > _flag)  {
-                //check switch
-                if (checkHotKey(vSwitchKeyStatus, GET_SWITCH_KEY(vSwitchKeyStatus) != 0xFE)) {
+                // Modifier-release path: only fire hotkeys that have no main
+                // key bound (e.g., just Ctrl+Shift). For hotkeys with a real
+                // keycode, the keydown branch above is the only entry point.
+                if (switchKey == SWITCH_KEY_UNSET && checkHotKey(vSwitchKeyStatus, /*checkKeyCode=*/false)) {
                     _lastFlag = 0;
                     switchLanguage();
                     _hasJustUsedHotKey = true;
                     return NULL;
                 }
-                if (checkHotKey(convertToolHotKey, GET_SWITCH_KEY(convertToolHotKey) != 0xFE)) {
+                if (convertKey == SWITCH_KEY_UNSET && checkHotKey(convertToolHotKey, /*checkKeyCode=*/false)) {
                     _lastFlag = 0;
                     [appDelegate onQuickConvert];
                     _hasJustUsedHotKey = true;

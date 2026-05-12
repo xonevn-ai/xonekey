@@ -32,6 +32,19 @@ redistribute your new version, it MUST be open source.
 
 #define OTHER_CONTROL_KEY (_flag & MASK_ALT) || (_flag & MASK_CONTROL)
 #define DYNA_DATA(macro, pos) (macro ? pData->macroData[pos] : pData->charData[pos])
+
+// vSwitchKeyStatus / convertToolHotKey bit layout:
+//   bits  0- 7 : keycode (read by the hook via GET_SWITCH_KEY)
+//   bit      8 : Control modifier   (HAS_CONTROL)
+//   bit      9 : Option/Alt         (HAS_OPTION)
+//   bit     10 : Command/Win        (HAS_COMMAND)
+//   bit     11 : Shift              (HAS_SHIFT)
+//   bit     15 : Beep on toggle     (HAS_BEEP)
+//   bits 24-31 : keycode mirror     (read by MainControlDialog::fillData for display)
+// The keycode is intentionally written to both bits 0-7 and bits 24-31 so
+// that EMPTY_HOTKEY (= SWITCH_KEY_UNSET in both locations, all flags clear)
+// is a single 32-bit value the hook can compare against in one operation.
+static const UINT8 SWITCH_KEY_UNSET = 0xFE;
 #define EMPTY_HOTKEY 0xFE0000FE
 
 static vector<string> _chromiumBrowser = {
@@ -428,13 +441,13 @@ static void SendNewCharString(const bool& dataFromMacro = false) {
 bool checkHotKey(int hotKeyData, bool checkKeyCode = true) {
 	if ((hotKeyData & (~0x8000)) == EMPTY_HOTKEY)
 		return false;
-	if (HAS_CONTROL(hotKeyData) ^ GET_BOOL(_lastFlag & MASK_CONTROL))
+	if (HAS_CONTROL(hotKeyData) != GET_BOOL(_lastFlag & MASK_CONTROL))
 		return false;
-	if (HAS_OPTION(hotKeyData) ^ GET_BOOL(_lastFlag & MASK_ALT))
+	if (HAS_OPTION(hotKeyData) != GET_BOOL(_lastFlag & MASK_ALT))
 		return false;
-	if (HAS_COMMAND(hotKeyData) ^ GET_BOOL(_lastFlag & MASK_WIN))
+	if (HAS_COMMAND(hotKeyData) != GET_BOOL(_lastFlag & MASK_WIN))
 		return false;
-	if (HAS_SHIFT(hotKeyData) ^ GET_BOOL(_lastFlag & MASK_SHIFT))
+	if (HAS_SHIFT(hotKeyData) != GET_BOOL(_lastFlag & MASK_SHIFT))
 		return false;
 	if (checkKeyCode) {
 		if (GET_SWITCH_KEY(hotKeyData) != _keycode)

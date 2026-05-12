@@ -386,11 +386,16 @@ void MainControlDialog::fillData() {
     SendDlgItemMessage(hTabPage4, IDC_STATIC_APP_VERSION_INFO, WM_SETTEXT, 0, LPARAM(buffer));
 }
 
+// vSwitchKeyStatus stores the keycode twice: bits 0-7 are read by the
+// keyboard hook (via GET_SWITCH_KEY), and bits 24-31 are read by fillData()
+// for display in the settings dialog. Keeping them in sync lets EMPTY_HOTKEY
+// (0xFE0000FE) be a single sentinel value the hook compares in one operation.
+static const unsigned int SWITCH_HOOK_KEYCODE_MASK    = 0x000000FF; // bits 0-7
+static const unsigned int SWITCH_DISPLAY_KEYCODE_MASK = 0xFF000000; // bits 24-31
+
 void MainControlDialog::setSwitchKey(const unsigned short& code) {
-    vSwitchKeyStatus &= 0xFFFFFF00;
-    vSwitchKeyStatus |= code;
-    vSwitchKeyStatus &= 0x00FFFFFF;
-    vSwitchKeyStatus |= ((unsigned int)code << 24);
+    vSwitchKeyStatus = (vSwitchKeyStatus & ~SWITCH_HOOK_KEYCODE_MASK)    | code;
+    vSwitchKeyStatus = (vSwitchKeyStatus & ~SWITCH_DISPLAY_KEYCODE_MASK) | ((unsigned int)code << 24);
     APP_SET_DATA(vSwitchKeyStatus, vSwitchKeyStatus);
 }
 
