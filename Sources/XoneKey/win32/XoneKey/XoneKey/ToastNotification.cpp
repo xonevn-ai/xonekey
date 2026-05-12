@@ -12,7 +12,7 @@ void ToastNotification::RegisterToastClass() {
 
     WNDCLASSEX wcex = { 0 };
     wcex.cbSize = sizeof(WNDCLASSEX);
-    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.style = CS_HREDRAW | CS_VREDRAW | CS_DROPSHADOW;
     wcex.lpfnWndProc = ToastWndProc;
     wcex.hInstance = GetModuleHandle(NULL);
     wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -37,69 +37,77 @@ LRESULT CALLBACK ToastNotification::ToastWndProc(HWND hwnd, UINT msg, WPARAM wPa
     case WM_PAINT: {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
-        
+
         RECT rc;
         GetClientRect(hwnd, &rc);
         int width = rc.right - rc.left;
         int height = rc.bottom - rc.top;
 
-        // --- Oversampled Rendering (2x) ---
+        // Oversampled rendering at 2x for smooth anti-aliased edges
         HDC memDC = CreateCompatibleDC(hdc);
         HBITMAP memBitmap = CreateCompatibleBitmap(hdc, width * 2, height * 2);
         HGDIOBJ hOldBitmap = SelectObject(memDC, memBitmap);
 
-        // Fill transparent-ish base (though we have SetWindowRgn)
-        HBRUSH hClearBrush = CreateSolidBrush(RGB(0, 0, 0));
         RECT rcFull = { 0, 0, width * 2, height * 2 };
+        HBRUSH hClearBrush = CreateSolidBrush(RGB(0, 0, 0));
         FillRect(memDC, &rcFull, hClearBrush);
         DeleteObject(hClearBrush);
 
-        // Set colors based on type (Material Design palette)
-        COLORREF bgColor, borderColor;
+        // Accent color per toast type (Material Design)
+        COLORREF accentColor;
         switch (toastType) {
-        case TOAST_SUCCESS: bgColor = RGB(76, 175, 80);  borderColor = RGB(56, 142, 60);  break;
-        case TOAST_WARNING: bgColor = RGB(255, 152, 0);  borderColor = RGB(230, 119, 0);  break;
-        case TOAST_ERROR:   bgColor = RGB(244, 67, 54);  borderColor = RGB(211, 47, 47);  break;
+        case TOAST_SUCCESS: accentColor = RGB(76, 175, 80);  break;
+        case TOAST_WARNING: accentColor = RGB(255, 152, 0);  break;
+        case TOAST_ERROR:   accentColor = RGB(244, 67, 54);  break;
         case TOAST_INFO:
-        default:            bgColor = RGB(33, 150, 243); borderColor = RGB(25, 118, 210); break;
+        default:            accentColor = RGB(33, 150, 243); break;
         }
 
-        HBRUSH hBrush = CreateSolidBrush(bgColor);
-        HPEN hPen = CreatePen(PS_SOLID, 2, borderColor); // Thicker pen for 2x
-        HGDIOBJ hOldMemBrush = SelectObject(memDC, hBrush);
-        HGDIOBJ hOldMemPen = SelectObject(memDC, hPen);
+        int W = width * 2;
+        int H = height * 2;
+        const int cornerR = 24; // 12px at 1x → 24px at 2x
+        const int accentW = 20; // 10px accent strip at 1x → 20px at 2x
 
-        // Draw pill at 2x scale
-        int radius = height * 2;
-        RoundRect(memDC, 0, 0, width * 2, height * 2, radius, radius);
+        // 1. Dark card background (rounded rectangle)
+        HPEN hNoPen = (HPEN)GetStockObject(NULL_PEN);
+        HBRUSH hBgBrush = CreateSolidBrush(RGB(30, 30, 30));
+        HGDIOBJ hOldPen = SelectObject(memDC, hNoPen);
+        HGDIOBJ hOldBrush = SelectObject(memDC, hBgBrush);
+        RoundRect(memDC, 0, 0, W, H, cornerR, cornerR);
+        SelectObject(memDC, hOldBrush);
+        SelectObject(memDC, hOldPen);
+        DeleteObject(hBgBrush);
 
-        // Draw text at 2x scale
+        // 2. Left accent strip clipped to the rounded card boundary
+        HRGN hRoundRgn = CreateRoundRectRgn(0, 0, W + 1, H + 1, cornerR, cornerR);
+        SelectClipRgn(memDC, hRoundRgn);
+        HBRUSH hAccentBrush = CreateSolidBrush(accentColor);
+        RECT rcAccent = { 0, 0, accentW, H };
+        FillRect(memDC, &rcAccent, hAccentBrush);
+        SelectClipRgn(memDC, NULL);
+        DeleteObject(hAccentBrush);
+        DeleteObject(hRoundRgn);
+
+        // 3. White text, left-aligned with padding after the accent strip
         SetBkMode(memDC, TRANSPARENT);
         SetTextColor(memDC, RGB(255, 255, 255));
-        HFONT hFont = CreateFont(38, 0, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE,
+        HFONT hFont = CreateFont(38, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
             ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
             DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI");
-        HGDIOBJ hOldMemFont = SelectObject(memDC, hFont);
+        HGDIOBJ hOldFont = SelectObject(memDC, hFont);
+        RECT rcText = { accentW + 48, 0, W - 24, H };
+        DrawText(memDC, message, -1, &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 
-        RECT rcText = { 0, 0, width * 2, height * 2 };
-        DrawText(memDC, message, -1, &rcText, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-
-        // --- Downscale to Window DC (HALFTONE for smooth edges) ---
+        // Downscale with HALFTONE for smooth sub-pixel rendering
         SetStretchBltMode(hdc, HALFTONE);
         SetBrushOrgEx(hdc, 0, 0, NULL);
-        StretchBlt(hdc, 0, 0, width, height, memDC, 0, 0, width * 2, height * 2, SRCCOPY);
+        StretchBlt(hdc, 0, 0, width, height, memDC, 0, 0, W, H, SRCCOPY);
 
-        // Cleanup
-        SelectObject(memDC, hOldMemFont);
+        SelectObject(memDC, hOldFont);
         DeleteObject(hFont);
-        SelectObject(memDC, hOldMemBrush);
-        SelectObject(memDC, hOldMemPen);
-        DeleteObject(hBrush);
-        DeleteObject(hPen);
         SelectObject(memDC, hOldBitmap);
         DeleteObject(memBitmap);
         DeleteDC(memDC);
-
         EndPaint(hwnd, &ps);
         return 0;
     }
@@ -155,12 +163,12 @@ void ToastNotification::Show(HWND hParent, LPCTSTR szMessage, int type, DWORD du
     // Fix: CreateWindowEx with WS_POPUP needs WS_VISIBLE or ShowWindow
     // But we use AnimateWindow, so let's keep it clean.
     
-    // Set pill region
-    HRGN hRgn = CreateRoundRectRgn(0, 0, width, height, height, height);
+    // Set rounded rectangle region (12px corner radius)
+    HRGN hRgn = CreateRoundRectRgn(0, 0, width + 1, height + 1, 12, 12);
     SetWindowRgn(hToastWnd, hRgn, TRUE);
-    
-    // Set transparency
-    SetLayeredWindowAttributes(hToastWnd, 0, 235, LWA_ALPHA);
+
+    // Near-opaque for readability; CS_DROPSHADOW provides the shadow
+    SetLayeredWindowAttributes(hToastWnd, 0, 248, LWA_ALPHA);
     
     // Show with animation
     AnimateWindow(hToastWnd, 200, AW_BLEND);

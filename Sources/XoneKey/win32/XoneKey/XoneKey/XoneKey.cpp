@@ -449,7 +449,7 @@ void switchLanguage() {
 	else
 		vLanguage = 0;
 	if (HAS_BEEP(vSwitchKeyStatus))
-		MessageBeep(MB_OK);
+		MessageBeep(MB_ICONASTERISK);
 	AppDelegate::getInstance()->onInputMethodChangedFromHotKey();
 	if (vUseSmartSwitchKey) {
 		setAppInputMethodStatus(XoneKeyHelper::getFrontMostAppExecuteName(), vLanguage | (vCodeTable << 1));
