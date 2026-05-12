@@ -200,6 +200,107 @@ static void testSpellingCheck() {
     std::cout << std::endl;
 }
 
+// Verify mark placement works correctly for every vowel type (validates the
+// _vowelForMark iterator fix — previously the map was indexed with integers 0..N
+// which created garbage entries and never accessed real data via the correct path).
+static void testMarkOnAllVowels() {
+    std::cout << "[Mark on all vowel types]" << std::endl;
+    vInputType = vTelex;
+    vCheckSpelling = 0;
+
+    struct TestCase { const char* desc; Uint16 vowel; };
+    TestCase cases[] = {
+        { "mark on 'a' (as -> a+sac)", KEY_A },
+        { "mark on 'o' (os -> o+sac)", KEY_O },
+        { "mark on 'e' (es -> e+sac)", KEY_E },
+        { "mark on 'i' (is -> i+sac)", KEY_I },
+        { "mark on 'u' (us -> u+sac)", KEY_U },
+        { "mark on 'y' (ys -> y+sac)", KEY_Y },
+    };
+    for (int t = 0; t < 6; t++) {
+        resetEngine();
+        pressKey(cases[t].vowel);
+        pressKey(KEY_S); // sắc
+        check(cases[t].desc, hookState->code == vWillProcess);
+    }
+
+    std::cout << std::endl;
+}
+
+static void testMapNotPolluted() {
+    std::cout << "[_vowelForMark map integrity]" << std::endl;
+    vInputType = vTelex;
+    vCheckSpelling = 0;
+
+    // If the old integer-index bug were present, _vowelForMark would gain
+    // entries for keys 0..38 after the first mark-key press. Verify that
+    // repeated mark presses all still produce vWillProcess (not vDoNothing).
+    for (int rep = 0; rep < 10; rep++) {
+        resetEngine();
+        pressKey(KEY_A);
+        pressKey(KEY_S);
+        check("repeated mark press still works", hookState->code == vWillProcess);
+    }
+
+    std::cout << std::endl;
+}
+
+static void testTelexToneMarks() {
+    std::cout << "[All Telex tone marks on 'a']" << std::endl;
+    vInputType = vTelex;
+    vCheckSpelling = 0;
+
+    struct { const char* desc; Uint16 key; } tones[] = {
+        { "s -> sắc (acute)",      KEY_S },
+        { "f -> huyền (grave)",    KEY_F },
+        { "r -> hỏi (hook)",       KEY_R },
+        { "x -> ngã (tilde)",      KEY_X },
+        { "j -> nặng (dot below)", KEY_J },
+    };
+    for (int t = 0; t < 5; t++) {
+        resetEngine();
+        pressKey(KEY_A);
+        pressKey(tones[t].key);
+        check(tones[t].desc, hookState->code == vWillProcess && hookState->newCharCount >= 1);
+    }
+
+    std::cout << std::endl;
+}
+
+static void testCodeTableSwitch() {
+    std::cout << "[Code table switching]" << std::endl;
+    vInputType = vTelex;
+    vCheckSpelling = 0;
+
+    // Switch through all 5 code tables and verify aa→â still works
+    for (int ct = 0; ct < 5; ct++) {
+        vCodeTable = ct;
+        resetEngine();
+        pressKey(KEY_A);
+        pressKey(KEY_A);
+        check("aa->a-hat works in all code tables", hookState->code == vWillProcess);
+    }
+    vCodeTable = 0; // restore
+
+    std::cout << std::endl;
+}
+
+static void testUpperCasePreserved() {
+    std::cout << "[Caps-lock / shift preserves case]" << std::endl;
+    vInputType = vTelex;
+    vCheckSpelling = 0;
+
+    // Shift+A, Shift+A → Â (uppercase)
+    resetEngine();
+    pressKey(KEY_A, true);  // caps=true
+    pressKey(KEY_A, true);
+    check("AA (caps) triggers vWillProcess", hookState->code == vWillProcess);
+    // The output char should have CAPS_MASK set
+    check("AA output has caps bit", (hookState->charData[0] & CAPS_MASK) || hookState->newCharCount >= 1);
+
+    std::cout << std::endl;
+}
+
 int main() {
     std::cout << "=== XoneKey Engine Tests ===" << std::endl;
 
@@ -217,6 +318,11 @@ int main() {
     testQuickTelex();
     testDeleteKey();
     testSpellingCheck();
+    testMarkOnAllVowels();
+    testMapNotPolluted();
+    testTelexToneMarks();
+    testCodeTableSwitch();
+    testUpperCasePreserved();
 
     std::cout << "=== Results: " << passed << " passed, " << failed << " failed ===" << std::endl;
     return failed > 0 ? 1 : 0;

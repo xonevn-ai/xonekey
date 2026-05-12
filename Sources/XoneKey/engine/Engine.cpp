@@ -149,7 +149,7 @@ void* vKeyInit() {
 bool isWordBreak(const vKeyEvent& event, const vKeyEventState& state, const Uint16& data) {
     if (event == vKeyEvent::Mouse)
         return true;
-    for (i = 0; i < _breakCode.size(); i++) {
+    for (i = 0; i < (int)_breakCode.size(); i++) {
         if (_breakCode[i] == data) {
             return true;
         }
@@ -158,7 +158,7 @@ bool isWordBreak(const vKeyEvent& event, const vKeyEventState& state, const Uint
 }
 
 bool isMacroBreakCode(const int& data) {
-    for (i = 0; i < _macroBreakCode.size(); i++) {
+    for (i = 0; i < (int)_macroBreakCode.size(); i++) {
         if (_macroBreakCode[i] == data) {
             return true;
         }
@@ -194,11 +194,11 @@ void checkSpelling(const bool& forceCheckVowel=false) {
         j = 0;
         //Check first consonant
         if (IS_CONSONANT(CHR(0))) {
-            for (i = 0; i < _consonantTable.size(); i++) {
+            for (i = 0; i < (int)_consonantTable.size(); i++) {
                 _spellingFlag = false;
-                if (_spellingEndIndex < _consonantTable[i].size())
+                if (_spellingEndIndex < (int)_consonantTable[i].size())
                     _spellingFlag = true;
-                for (j = 0; j < _consonantTable[i].size(); j++) {
+                for (j = 0; j < (int)_consonantTable[i].size(); j++) {
                     if (_spellingEndIndex > j &&
                         (_consonantTable[i][j] & ~(vQuickStartConsonant ? END_CONSONANT_MASK : 0)) != CHR(j) &&
                         (_consonantTable[i][j] & ~(vAllowConsonantZFWJ ? CONSONANT_ALLOW_MASK : 0)) != CHR(j)) {
@@ -239,9 +239,9 @@ void checkSpelling(const bool& forceCheckVowel=false) {
             //check correct combined vowel
             if (k - j > 1 && forceCheckVowel) {
                 vector<vector<Uint32>>& vowelSet = _vowelCombine[CHR(j)];
-                for (l = 0; l < vowelSet.size(); l++) {
+                for (l = 0; l < (int)vowelSet.size(); l++) {
                     _spellingFlag = false;
-                    for (ii = 1; ii < vowelSet[l].size(); ii++) {
+                    for (ii = 1; ii < (int)vowelSet[l].size(); ii++) {
                         if (j + ii - 1 < _spellingEndIndex && vowelSet[l][ii] != ((CHR(j + ii - 1) | (TypingWord[j + ii - 1] & TONEW_MASK) | (TypingWord[j + ii - 1] & TONE_MASK)))) {
                             _spellingFlag = true;
                             break;
@@ -258,10 +258,10 @@ void checkSpelling(const bool& forceCheckVowel=false) {
             }
             
             //continue check last consonant
-            for (ii = 0; ii < _endConsonantTable.size(); ii++) {
+            for (ii = 0; ii < (int)_endConsonantTable.size(); ii++) {
                 _spellingFlag = false;
-   
-                for (j = 0; j < _endConsonantTable[ii].size(); j++) {
+
+                for (j = 0; j < (int)_endConsonantTable[ii].size(); j++) {
                     if (_spellingEndIndex > k+j &&
                         (_endConsonantTable[ii][j] & ~(vQuickEndConsonant ? END_CONSONANT_MASK : 0)) != CHR(k + j)) {
                         _spellingFlag = true;
@@ -417,7 +417,7 @@ void saveWord() {
         if (_index > 0) {
             if (_longWordHelper.size() > 0) { //save long word first
                 _typingStatesData.clear();
-                for (i = 0; i < _longWordHelper.size(); i++) {
+                for (i = 0; i < (int)_longWordHelper.size(); i++) {
                     if (i != 0 && i % MAX_BUFF == 0) { //save if overflow
                         _typingStates.push_back(_typingStatesData);
                         _typingStatesData.clear();
@@ -437,7 +437,7 @@ void saveWord() {
         }
     } else { //save macro words
         _typingStatesData.clear();
-        for (i = 0; i < hMacroData.size(); i++) {
+        for (i = 0; i < (int)hMacroData.size(); i++) {
             if (i != 0 && i % MAX_BUFF == 0) { //break if overflow
                 _typingStates.push_back(_typingStatesData);
                 _typingStatesData.clear();
@@ -458,7 +458,7 @@ void saveWord(const Uint32& keyCode, const int& count) {
 
 void saveSpecialChar() {
     _typingStatesData.clear();
-    for (i = 0; i < _specialChar.size(); i++) {
+    for (i = 0; i < (int)_specialChar.size(); i++) {
         _typingStatesData.push_back(_specialChar[i]);
     }
     _typingStates.push_back(_typingStatesData);
@@ -478,7 +478,7 @@ void restoreLastTypingState() {
                 _specialChar = _typingStatesData;
                 checkSpelling();
             } else {
-                for (i = 0; i < _typingStatesData.size(); i++) {
+                for (i = 0; i < (int)_typingStatesData.size(); i++) {
                     TypingWord[i] = _typingStatesData[i];
                 }
                 _index = (Byte)_typingStatesData.size();
@@ -702,15 +702,15 @@ void removeMark() {
 
 bool canHasEndConsonant() {
     vector<vector<Uint32>>& vo = _vowelCombine[CHR(VSI)];
-    for (ii = 0; ii < vo.size(); ii++) {
+    for (ii = 0; ii < (int)vo.size(); ii++) {
         kk = VSI;
-        for (iii = 1; iii < vo[ii].size(); iii++) {
+        for (iii = 1; iii < (int)vo[ii].size(); iii++) {
             if (kk > VEI || ((CHR(kk) | (TypingWord[kk] & TONE_MASK) | (TypingWord[kk] & TONEW_MASK)) != vo[ii][iii])) {
                 break;
             }
             kk++;
         }
-        if (iii >= vo[ii].size()) {
+        if (iii >= (int)vo[ii].size()) {
             return vo[ii][0] == 1;
         }
     }
@@ -1106,7 +1106,7 @@ void checkForStandaloneChar(const Uint16& data, const bool& isCaps, const Uint32
         reverseLastStandaloneChar(keyWillReverse, isCaps);
         return;
     } else if (_index == 1) { //1 char
-        for (i = 0; i < _standaloneWbad.size(); i++) {
+        for (i = 0; i < (int)_standaloneWbad.size(); i++) {
             if (CHR(0) == _standaloneWbad[i]) {
                 insertKey(data, isCaps);
                 return;
@@ -1116,7 +1116,7 @@ void checkForStandaloneChar(const Uint16& data, const bool& isCaps, const Uint32
         reverseLastStandaloneChar(keyWillReverse, isCaps);
         return;
     } else if (_index == 2) {
-        for (i = 0; i < _doubleWAllowed.size(); i++) {
+        for (i = 0; i < (int)_doubleWAllowed.size(); i++) {
             if (CHR(0) == _doubleWAllowed[i][0] && CHR(1) == _doubleWAllowed[i][1]) {
                 insertKey(data, isCaps, false);
                 reverseLastStandaloneChar(keyWillReverse, isCaps);
@@ -1168,8 +1168,8 @@ void handleMainKey(const Uint16& data, const bool& isCaps) {
         isCorect = false;
         isChanged = false;
         k = _index;
-        for (i = 0; i < _consonantD.size(); i++) {
-            if (_index < _consonantD[i].size())
+        for (i = 0; i < (int)_consonantD.size(); i++) {
+            if (_index < (int)_consonantD[i].size())
                 continue;
             isCorect = true;
             checkCorrectVowel(_consonantD, i, k, data);
@@ -1193,13 +1193,13 @@ void handleMainKey(const Uint16& data, const bool& isCaps) {
     
     //if is mark key
     if (IS_MARK_KEY(data)) {
-        for (i = 0; i < _vowelForMark.size(); i++) {
-            vector<vector<Uint16>>& charset = _vowelForMark[i];
+        for (map<Uint16, vector<vector<Uint16>>>::iterator vfmIt = _vowelForMark.begin(); vfmIt != _vowelForMark.end(); ++vfmIt) {
+            vector<vector<Uint16>>& charset = vfmIt->second;
             isCorect = false;
             isChanged = false;
             k = _index;
-            for (l = 0; l < charset.size(); l++) {
-                if (_index < charset[l].size())
+            for (l = 0; l < (int)charset.size(); l++) {
+                if (_index < (int)charset[l].size())
                     continue;
                 isCorect = true;
                 checkCorrectVowel(charset, l, k, data);
@@ -1247,8 +1247,8 @@ void handleMainKey(const Uint16& data, const bool& isCaps) {
     isCorect = false;
     isChanged = false;
     k = _index;
-    for (i = 0; i < charset.size(); i++) {
-        if (_index < charset[i].size())
+    for (i = 0; i < (int)charset.size(); i++) {
+        if (_index < (int)charset[i].size())
             continue;
         isCorect = true;
         checkCorrectVowel(charset, i, k, data);
