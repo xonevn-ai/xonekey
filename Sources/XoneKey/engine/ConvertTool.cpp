@@ -7,6 +7,7 @@
 //
 #include <locale>
 #include <codecvt>
+#include <algorithm>
 #include "ConvertTool.h"
 #include "Engine.h"
 #include <iostream>
@@ -28,7 +29,7 @@ static vector<Uint8> _breakCode = {'.', '?', '!'};
 static bool findKeyCode(const Uint32& charCode, const Uint8& code, int& j, int& k) {
     //find character which has tone/mark
     for (map<Uint32, vector<Uint16>>::iterator it = _codeTable[code].begin(); it != _codeTable[code].end(); ++it) {
-        for (int z = 0; z < it->second.size(); z++) {
+        for (int z = 0; z < (int)it->second.size(); z++) {
             if (charCode == it->second[z]) {
                 j = it->first;
                 k = z;
@@ -60,10 +61,10 @@ string convertUtil(const string& sourceString) {
     if (convertToolToAllNonCaps)
         shouldUpperCase = false;
     
-    for (int i = 0; i < data.size(); i++) {
+    for (int i = 0; i < (int)data.size(); i++) {
         p = 0;
         //find char with tone/mark
-        if (i < data.size() - 1) {
+        if (i < (int)data.size() - 1) {
             switch (convertToolFromCode) {
                 case 2: //VNI
                 case 4: //1258
@@ -166,7 +167,7 @@ string convertUtil(const string& sourceString) {
                 shouldUpperCase = true;
         } else if (t == ' ' && convertToolToCapsEachWord) {
             shouldUpperCase = true;
-        } else if (std::find(_breakCode.begin(), _breakCode.end(), t) != _breakCode.end()) {
+        } else if (std::find(_breakCode.begin(), _breakCode.end(), (Uint8)t) != _breakCode.end()) {
             hasBreak = true;
         } else {
             shouldUpperCase = false;

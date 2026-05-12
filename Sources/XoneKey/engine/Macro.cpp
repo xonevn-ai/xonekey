@@ -32,7 +32,7 @@ static void convert(const string& str, vector<Uint32>& outData) {
     Uint32 t = 0;
     int kSign = -1;
     int k = 0;
-    for (int i = 0; i < data.size(); i++) {
+    for (int i = 0; i < (int)data.size(); i++) {
         t = (Uint32)data[i];
         
         //find normal character fist
@@ -45,7 +45,7 @@ static void convert(const string& str, vector<Uint32>& outData) {
         for (map<Uint32, vector<Uint16>>::iterator it = _codeTable[0].begin(); it != _codeTable[0].end(); ++it) {
             kSign = -1;
             k = 0;
-            for (int j = 0; j < it->second.size(); j++) {
+            for (int j = 0; j < (int)it->second.size(); j++) {
                 if ((Uint16)t == it->second[j]) {
                     kSign = 0;
                     outData.push_back(_codeTable[vCodeTable][it->first][k] | CHAR_CODE_MASK);
@@ -113,8 +113,8 @@ void initMacroMap(const Byte* pData, const int& size) {
         
         macroTextSize = pData[cursor++];
         
-        // Validate macroTextSize
-        const int MAX_MACRO_TEXT_SIZE = 256;
+        // Validate macroTextSize (single byte field, max 255)
+        const int MAX_MACRO_TEXT_SIZE = 255;
         if (macroTextSize == 0 || macroTextSize > MAX_MACRO_TEXT_SIZE) {
             break; // Invalid size, stop processing
         }
@@ -168,7 +168,7 @@ void getMacroSaveData(vector<Byte>& outData) {
     
     for (std::map<vector<Uint32>, MacroData>::iterator it = macroMap.begin(); it != macroMap.end(); ++it) {
         outData.push_back((Byte)it->second.macroText.size());
-        for (int j = 0; j < it->second.macroText.size(); j++) {
+        for (int j = 0; j < (int)it->second.macroText.size(); j++) {
             outData.push_back(it->second.macroText[j]);
         }
         
@@ -184,20 +184,21 @@ void getMacroSaveData(vector<Byte>& outData) {
 static bool modifyCaseUnicode(Uint32& code, const bool& isUpperCase=true) {
     _charBuff = code;
     if (!(code & CHAR_CODE_MASK)) { //for normal char
-        code &= isUpperCase ? CAPS_MASK :  ~CAPS_MASK;
+        if (isUpperCase) code |= CAPS_MASK;
+        else code &= ~CAPS_MASK;
         return code != _charBuff;
     }
     
     //for unicode character
     for (map<Uint32, vector<Uint16>>::iterator it = _codeTable[vCodeTable].begin(); it != _codeTable[vCodeTable].end(); ++it) {
-        for (_kMacro = 0; _kMacro < it->second.size(); _kMacro++) {
+        for (_kMacro = 0; _kMacro < (int)it->second.size(); _kMacro++) {
             if ((Uint16)code == it->second[_kMacro]) {
                 if (_kMacro % 2 == 0 && !isUpperCase)
                     _kMacro++;
                 else if (_kMacro % 2 != 0 && isUpperCase)
                     _kMacro--;
                 code = _codeTable[vCodeTable][it->first][_kMacro] | CHAR_CODE_MASK;
-                return code != _charBuff;;
+                return code != _charBuff;
             }//end if
         }
     }
@@ -205,7 +206,7 @@ static bool modifyCaseUnicode(Uint32& code, const bool& isUpperCase=true) {
 }
 
 bool findMacro(vector<Uint32>& key, vector<Uint32>& macroContentCode) {
-    for (c = 0; c < key.size(); c++) {
+    for (c = 0; c < (int)key.size(); c++) {
         key[c] = getCharacterCode(key[c]);
     }
     if (macroMap.find(key) != macroMap.end()) {
@@ -218,7 +219,7 @@ bool findMacro(vector<Uint32>& key, vector<Uint32>& macroContentCode) {
         _macroFlag = false;
         if (key.size() > 1 && modifyCaseUnicode(key[1], false)) {
             _macroFlag = true;
-            for (c = 2; c < key.size(); c++) {
+            for (c = 2; c < (int)key.size(); c++) {
                 modifyCaseUnicode(key[c], false);
             }
         }
@@ -228,7 +229,7 @@ bool findMacro(vector<Uint32>& key, vector<Uint32>& macroContentCode) {
                 macroContentCode.clear();
                 MacroData data = macroMap[key];
                 macroContentCode = data.macroContentCode;
-                for (c = 0; c < macroContentCode.size(); c++) {
+                for (c = 0; c < (int)macroContentCode.size(); c++) {
                     if (c == 0 || _macroFlag) {
                         _kChar = keyCodeToCharacter(macroContentCode[c]);
                         if (_kChar != 0) {
