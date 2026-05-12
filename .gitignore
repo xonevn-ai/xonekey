@@ -8,3 +8,7 @@
 /Sources/XoneKey/win32/XoneKey/XoneKey/x64/Debug
 /Sources/XoneKey/win32/XoneKey/XoneKey/x64/Release
 /Sources/XoneKey/win32/XoneKey/XoneKeyUpdate/x64/Release
+
+# Linux build artifacts
+Sources/XoneKey/engine/*.o
+Sources/XoneKey/engine/test_engine

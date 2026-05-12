@@ -113,8 +113,8 @@ void initMacroMap(const Byte* pData, const int& size) {
         
         macroTextSize = pData[cursor++];
         
-        // Validate macroTextSize
-        const int MAX_MACRO_TEXT_SIZE = 256;
+        // Validate macroTextSize (single byte field, max 255)
+        const int MAX_MACRO_TEXT_SIZE = 255;
         if (macroTextSize == 0 || macroTextSize > MAX_MACRO_TEXT_SIZE) {
             break; // Invalid size, stop processing
         }
@@ -184,7 +184,8 @@ void getMacroSaveData(vector<Byte>& outData) {
 static bool modifyCaseUnicode(Uint32& code, const bool& isUpperCase=true) {
     _charBuff = code;
     if (!(code & CHAR_CODE_MASK)) { //for normal char
-        code &= isUpperCase ? CAPS_MASK :  ~CAPS_MASK;
+        if (isUpperCase) code |= CAPS_MASK;
+        else code &= ~CAPS_MASK;
         return code != _charBuff;
     }
     
@@ -197,7 +198,7 @@ static bool modifyCaseUnicode(Uint32& code, const bool& isUpperCase=true) {
                 else if (_kMacro % 2 != 0 && isUpperCase)
                     _kMacro--;
                 code = _codeTable[vCodeTable][it->first][_kMacro] | CHAR_CODE_MASK;
-                return code != _charBuff;;
+                return code != _charBuff;
             }//end if
         }
     }

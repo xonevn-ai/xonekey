@@ -7,6 +7,7 @@
 //
 #include <locale>
 #include <codecvt>
+#include <algorithm>
 #include "ConvertTool.h"
 #include "Engine.h"
 #include <iostream>
@@ -166,7 +167,7 @@ string convertUtil(const string& sourceString) {
                 shouldUpperCase = true;
         } else if (t == ' ' && convertToolToCapsEachWord) {
             shouldUpperCase = true;
-        } else if (std::find(_breakCode.begin(), _breakCode.end(), t) != _breakCode.end()) {
+        } else if (std::find(_breakCode.begin(), _breakCode.end(), (Uint8)t) != _breakCode.end()) {
             hasBreak = true;
         } else {
             shouldUpperCase = false;
