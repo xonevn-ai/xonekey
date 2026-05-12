@@ -54,14 +54,14 @@ LRESULT CALLBACK ToastNotification::ToastWndProc(HWND hwnd, UINT msg, WPARAM wPa
         FillRect(memDC, &rcFull, hClearBrush);
         DeleteObject(hClearBrush);
 
-        // Set colors based on type
+        // Set colors based on type (Material Design palette)
         COLORREF bgColor, borderColor;
         switch (toastType) {
-        case TOAST_SUCCESS: bgColor = RGB(39, 174, 96); borderColor = RGB(30, 132, 73); break;
-        case TOAST_WARNING: bgColor = RGB(243, 156, 18); borderColor = RGB(175, 110, 11); break;
-        case TOAST_ERROR:   bgColor = RGB(192, 57, 43); borderColor = RGB(146, 43, 33); break;
+        case TOAST_SUCCESS: bgColor = RGB(76, 175, 80);  borderColor = RGB(56, 142, 60);  break;
+        case TOAST_WARNING: bgColor = RGB(255, 152, 0);  borderColor = RGB(230, 119, 0);  break;
+        case TOAST_ERROR:   bgColor = RGB(244, 67, 54);  borderColor = RGB(211, 47, 47);  break;
         case TOAST_INFO:
-        default:            bgColor = RGB(41, 128, 185); borderColor = RGB(21, 67, 96); break;
+        default:            bgColor = RGB(33, 150, 243); borderColor = RGB(25, 118, 210); break;
         }
 
         HBRUSH hBrush = CreateSolidBrush(bgColor);
@@ -76,7 +76,7 @@ LRESULT CALLBACK ToastNotification::ToastWndProc(HWND hwnd, UINT msg, WPARAM wPa
         // Draw text at 2x scale
         SetBkMode(memDC, TRANSPARENT);
         SetTextColor(memDC, RGB(255, 255, 255));
-        HFONT hFont = CreateFont(34, 0, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE,
+        HFONT hFont = CreateFont(38, 0, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE,
             ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
             DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI");
         HGDIOBJ hOldMemFont = SelectObject(memDC, hFont);
@@ -135,8 +135,8 @@ void ToastNotification::Show(HWND hParent, LPCTSTR szMessage, int type, DWORD du
     }
     
     // Calculate size
-    int width = 260;
-    int height = 40;
+    int width = 320;
+    int height = 48;
     
     // Screen positioning (Bottom-Center, 80px from bottom)
     int x = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;

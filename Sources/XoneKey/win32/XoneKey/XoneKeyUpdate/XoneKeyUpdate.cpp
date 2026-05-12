@@ -76,7 +76,7 @@ DWORD WINAPI UpdateThreadFunction(LPVOID lpParam) {
 	WCHAR currentDir[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, currentDir);
 	wsprintf(path, TEXT("%s\\_XoneKey.tempf"), currentDir);
-	HRESULT res = URLDownloadToFile(NULL, L"https://raw.githubusercontent.com/xonevn-ai/xonekey/master/version.json", path, 0, NULL);
+	HRESULT res = URLDownloadToFile(NULL, L"https://raw.githubusercontent.com/xonevn-ai/xonekey/main/version.json", path, 0, NULL);
 
 	wstring data;
 	if (res == S_OK) {

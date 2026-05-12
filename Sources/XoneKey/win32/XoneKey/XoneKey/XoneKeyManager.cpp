@@ -54,7 +54,7 @@ void XoneKeyManager::freeEngine() {
 }
 
 bool XoneKeyManager::checkUpdate(string& newVersion) {
-	wstring dataW = XoneKeyHelper::getContentOfUrl(L"https://raw.githubusercontent.com/xonevn-ai/xonekey/master/version.json");
+	wstring dataW = XoneKeyHelper::getContentOfUrl(L"https://raw.githubusercontent.com/xonevn-ai/xonekey/main/version.json");
 	string data = wideStringToUtf8(dataW);
 
 	//simple parse
@@ -88,16 +88,9 @@ bool XoneKeyManager::checkUpdate(string& newVersion) {
 		return false;
 	}
 
-	auto shiftVersion = [](DWORD version) {
-		return (version << 16) | (version & 0x00FF00) | (version >> 16 & 0xFF);
-		};
-
 	string newVersionCodeStr = data.substr(posBegin, posEnd - posBegin);
 	DWORD newVersionCode = (DWORD)atoi(newVersionCodeStr.data());
-	newVersionCode = shiftVersion(newVersionCode);
-
 	DWORD currentVersionCode = XoneKeyHelper::getVersionNumber();
-	currentVersionCode = shiftVersion(currentVersionCode);
 
 	return newVersionCode > currentVersionCode;
 }

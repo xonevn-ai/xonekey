@@ -80,7 +80,7 @@ void AboutDialog::initDialog()
 
 	hUpdateButton = GetDlgItem(hDlg, IDC_BUTTON_CHECK_VERSION);
 
-	HFONT hFont = CreateFont(48, 0, 0, 0, FW_THIN, FALSE, FALSE, FALSE,
+	HFONT hFont = CreateFont(30, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
 							 ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
 							 DEFAULT_PITCH | FF_SWISS | FF_MODERN, _T("Segoe UI"));
 	SendDlgItemMessage(hDlg, IDC_STATIC_APP_TITLE, WM_SETFONT, WPARAM(hFont), TRUE);
@@ -107,10 +107,11 @@ void AboutDialog::handleUpdateCheckResult(WPARAM wParam, LPARAM lParam)
 	if (wParam == 1)
 	{ // Update available
 		char *versionStr = (char *)lParam;
-		WCHAR msg[256];
+		WCHAR msg[512];
 		wsprintf(msg,
-				 TEXT("XoneKey Có phiên bản mới (%s), bạn có muốn cập nhật không?"),
-				 utf8ToWideString(versionStr).c_str());
+				 TEXT("Phiên bản mới: %s đã sẵn sàng (hiện tại: %s). Bạn có muốn cập nhật không?"),
+				 utf8ToWideString(versionStr).c_str(),
+				 XoneKeyHelper::getVersionString().c_str());
 
 		free(versionStr); // Free the allocated string
 
