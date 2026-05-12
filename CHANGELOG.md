@@ -5,6 +5,20 @@ All notable changes to XoneKey will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2026-05-12
+
+### Fixed
+- **Macro case-conversion UB**: `toupper()` was called on a `Uint16` in the auto-caps macro path; for any character above 0x7F this was undefined behavior. The argument is now cast through `unsigned char`.
+- **Compiler warnings**: removed dead `index >= 0` checks on `Byte` (unsigned char) in `EngineSafety.h` that triggered `-Wtype-limits` under `-Wall`.
+
+### Changed
+- **Engine header hygiene**: removed `using namespace std;` from every engine header (`DataType.h`, `Vietnamese.h`, `Macro.h`, `SmartSwitchKey.h`, `ConvertTool.h`, `Engine.h`). All std types are now qualified with `std::` at declaration sites so includers no longer get unsolicited namespace pollution.
+- **Standard headers**: replaced non-standard `<memory.h>` / `<string.h>` with `<cstring>` in the engine sources.
+
+### Removed
+- **Dead helpers**: dropped `SafeGetTypingWord`, `SafeSetTypingWord`, and `SafeGetKeyState` from `EngineSafety.h` — never called from anywhere in the codebase. `SafeSetKeyState` (the only one actually used) is retained.
+- **Stale review docs**: deleted `engine/IMPROVEMENTS_SUMMARY.md`, `ENGINE_REVIEW_AND_IMPROVEMENTS.md`, and `CROSS_PLATFORM_COMPATIBILITY.md` whose contents had drifted from the actual code.
+
 ## [1.0.6] - 2026-02-28
 ### Added
 - **Manual Restart**: Added "Khởi động lại" (Restart) to the system tray menu for manual recovery.

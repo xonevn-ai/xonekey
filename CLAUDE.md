@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 XoneKey is a production-grade, open-source Vietnamese input method (IME) for Windows, macOS, and Linux. The core invariant is a **single platform-agnostic C++ engine** shared across all platforms — platform code must never bleed into the engine, and the engine must never import platform headers.
 
-Current stable: v1.0.6 (Windows), v1.0.2 (macOS). Linux is in active development.
+Current stable: v1.0.7 (Windows), v1.0.2 (macOS). Linux is in active development.
 
 ---
 
