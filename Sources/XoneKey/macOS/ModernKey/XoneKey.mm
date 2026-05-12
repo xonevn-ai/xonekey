@@ -168,7 +168,7 @@ extern "C" {
         initSmartSwitchKey((Byte*)data.bytes, (int)data.length);
         
         //init convert tool
-        convertToolDontAlertWhenCompleted = ![prefs boolForKey:@"convertToolDontAlertWhenCompleted"];
+        convertToolDontAlertWhenCompleted = [prefs boolForKey:@"convertToolDontAlertWhenCompleted"];
         convertToolToAllCaps = [prefs boolForKey:@"convertToolToAllCaps"];
         convertToolToAllNonCaps = [prefs boolForKey:@"convertToolToAllNonCaps"];
         convertToolToCapsFirstLetter = [prefs boolForKey:@"convertToolToCapsFirstLetter"];
@@ -285,22 +285,24 @@ extern "C" {
         if (!(data & CHAR_CODE_MASK)) {
             if (IS_DOUBLE_CODE(vCodeTable)) //VNI
                 InsertKeyLength(1);
-            
+
             _newEventDown = CGEventCreateKeyboardEvent(myEventSource, _newChar, true);
             _newEventUp = CGEventCreateKeyboardEvent(myEventSource, _newChar, false);
             _privateFlag = CGEventGetFlags(_newEventDown);
-            
+
             if (data & CAPS_MASK) {
                 _privateFlag |= kCGEventFlagMaskShift;
             } else {
                 _privateFlag &= ~kCGEventFlagMaskShift;
             }
             _privateFlag |= kCGEventFlagMaskNonCoalesced;
-            
+
             CGEventSetFlags(_newEventDown, _privateFlag);
             CGEventSetFlags(_newEventUp, _privateFlag);
             CGEventTapPostEvent(_proxy, _newEventDown);
             CGEventTapPostEvent(_proxy, _newEventUp);
+            CFRelease(_newEventDown);
+            CFRelease(_newEventUp);
         } else {
             if (vCodeTable == 0) { //unicode 2 bytes code
                 _newEventDown = CGEventCreateKeyboardEvent(myEventSource, 0, true);
@@ -385,8 +387,8 @@ extern "C" {
     void SendBackspace() {
         CGEventTapPostEvent(_proxy, eventBackSpaceDown);
         CGEventTapPostEvent(_proxy, eventBackSpaceUp);
-        
-        if (IS_DOUBLE_CODE(vCodeTable)) { //VNI or Unicode Compound
+
+        if (IS_DOUBLE_CODE(vCodeTable) && !_syncKey.empty()) { //VNI or Unicode Compound
             if (_syncKey.back() > 1) {
                 if (!(vCodeTable == 3 && containUnicodeCompoundApp(GetFrontMostApp()))) {
                     CGEventTapPostEvent(_proxy, eventBackSpaceDown);
@@ -404,11 +406,11 @@ extern "C" {
         _privateFlag |= kCGEventFlagMaskShift;
         CGEventSetFlags(eventVkeyDown, _privateFlag);
         CGEventSetFlags(eventVkeyUp, _privateFlag);
-        
+
         CGEventTapPostEvent(_proxy, eventVkeyDown);
         CGEventTapPostEvent(_proxy, eventVkeyUp);
-        
-        if (IS_DOUBLE_CODE(vCodeTable)) { //VNI or Unicode Compound
+
+        if (IS_DOUBLE_CODE(vCodeTable) && !_syncKey.empty()) { //VNI or Unicode Compound
             if (_syncKey.back() > 1) {
                 if (!(vCodeTable == 3 && containUnicodeCompoundApp(GetFrontMostApp()))) {
                     CGEventTapPostEvent(_proxy, eventVkeyDown);
@@ -732,7 +734,7 @@ extern "C" {
                             vKeyEventState::KeyDown,
                             _keycode,
                             _flag & kCGEventFlagMaskShift ? 1 : (_flag & kCGEventFlagMaskAlphaShift ? 2 : 0),
-                            OTHER_CONTROL_KEY);
+                            HasOtherControlKey(_flag));
             if (pData->code == vDoNothing) { //do nothing
                 if (IS_DOUBLE_CODE(vCodeTable)) { //VNI
                     if (pData->extCode == 1) { //break key

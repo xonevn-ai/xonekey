@@ -301,11 +301,8 @@ static void SendBackspace() {
 		PostMessage(HWND_BROADCAST, WM_CHAR, VK_BACK, 0L);
 		PostMessage(HWND_BROADCAST, WM_CHAR, VK_BACK, 0L);
 	}
-	if (IS_DOUBLE_CODE(vCodeTable)) { //VNI or Unicode Compound
+	if (IS_DOUBLE_CODE(vCodeTable) && !_syncKey.empty()) { //VNI or Unicode Compound
 		if (_syncKey.back() > 1) {
-			/*if (!(vCodeTable == 3 && containUnicodeCompoundApp(FRONT_APP))) {
-				SendInput(2, backspaceEvent, sizeof(INPUT));
-			}*/
 			SendInput(2, backspaceEvent, sizeof(INPUT));
 			if (vSupportMetroApp && XoneKeyHelper::getLastAppExecuteName().compare("ApplicationFrameHost.exe") == 0) {//Metro App
 				// Use PostMessage instead of SendMessage to avoid blocking
