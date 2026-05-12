@@ -18,7 +18,9 @@
 #include "SmartSwitchKey.h"
 #include "ConvertTool.h"
 
+#if defined(DEBUG) || defined(_DEBUG)
 #define IS_DEBUG 1
+#endif
 
 #ifndef LOBYTE
 #define LOBYTE(data) (data & 0xFF)

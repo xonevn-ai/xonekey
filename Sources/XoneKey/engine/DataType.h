@@ -42,7 +42,7 @@ typedef signed char Int8;
 typedef unsigned char Uint8;
 typedef unsigned short Uint16;
 typedef unsigned int Uint32;
-typedef unsigned long int Uint64;
+typedef unsigned long long int Uint64;
 
 enum HoolCodeState {
     vDoNothing = 0, //do not do anything
@@ -134,7 +134,7 @@ struct vKeyHookState {
         (vInputType == vTelex ? \
             keyCode == KEY_W || keyCode == KEY_E || keyCode == KEY_R || keyCode == KEY_O || keyCode == KEY_LEFT_BRACKET || \
             keyCode == KEY_RIGHT_BRACKET || keyCode == KEY_A || keyCode == KEY_S || keyCode == KEY_D || keyCode == KEY_F || keyCode == KEY_J || \
-            keyCode == KEY_Z || keyCode == KEY_X || keyCode == KEY_W \
+            keyCode == KEY_Z || keyCode == KEY_X \
         : (vInputType == vVNI ? \
             keyCode == KEY_1 || keyCode == KEY_2 || keyCode == KEY_3 || keyCode == KEY_4 || \
             keyCode == KEY_5 || keyCode == KEY_6 || keyCode == KEY_7 || keyCode == KEY_8 || keyCode == KEY_9 || keyCode == KEY_0 \
