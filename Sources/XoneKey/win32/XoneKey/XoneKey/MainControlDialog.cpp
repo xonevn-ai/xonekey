@@ -639,9 +639,9 @@ void MainControlDialog::handleUpdateCheckResult(WPARAM wParam, LPARAM lParam) {
         );
         if (msgboxID == IDYES) {
             //Call XoneKeyUpdate
-            WCHAR path[MAX_PATH];
-            GetCurrentDirectory(MAX_PATH, path);
-            wsprintf(path, TEXT("%s\\XoneKeyUpdate.exe"), path);
+            WCHAR dir[MAX_PATH], path[MAX_PATH];
+            GetCurrentDirectory(MAX_PATH, dir);
+            wsprintf(path, TEXT("%s\\XoneKeyUpdate.exe"), dir);
             ShellExecute(0, L"", path, 0, 0, SW_SHOWNORMAL);
 
             AppDelegate::getInstance()->onXoneKeyExit();

@@ -18,6 +18,16 @@ permissions:
   contents: write
 
 jobs:
+  macos-build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build macOS
+      run: |
+        xcodebuild -project Sources/XoneKey/macOS/XoneKey.xcodeproj \
+          -scheme XoneKey -configuration Release \
+          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
   build:
     runs-on: windows-latest
 

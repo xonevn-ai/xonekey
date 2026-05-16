@@ -132,7 +132,7 @@ static CFRunLoopSourceRef runLoopSource;
         CFRunLoopRef runLoop = CFRunLoopGetCurrent();
         if (runLoop && runLoopSource) {
             CFRunLoopStop(runLoop);
-            CFRunLoopRemoveSource(runLoop, runLoopSource, kCFRunLoopDefaultMode);
+            CFRunLoopRemoveSource(runLoop, runLoopSource, kCFRunLoopCommonModes);
         }
         
         if (runLoopSource) {
