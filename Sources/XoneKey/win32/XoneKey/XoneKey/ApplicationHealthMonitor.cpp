@@ -125,17 +125,8 @@ void ApplicationHealthMonitor::CheckHealth()
     // If it was 0, it means no heartbeat yet, use start time
     if (lastHeartbeat == 0) lastHeartbeat = _startTime;
 
-    DWORD timeSinceLastHeartbeat = 0;
-    
-    if (currentTime >= lastHeartbeat)
-    {
-        timeSinceLastHeartbeat = currentTime - lastHeartbeat;
-    }
-    else
-    {
-        // Overflow occurred
-        timeSinceLastHeartbeat = (MAXDWORD - lastHeartbeat) + currentTime + 1;
-    }
+    // DWORD unsigned subtraction handles GetTickCount wrap-around automatically
+    DWORD timeSinceLastHeartbeat = currentTime - lastHeartbeat;
     
     if (timeSinceLastHeartbeat > HEARTBEAT_TIMEOUT_MS)
     {

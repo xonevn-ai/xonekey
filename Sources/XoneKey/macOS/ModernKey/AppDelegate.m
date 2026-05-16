@@ -119,10 +119,12 @@ extern bool convertToolDontAlertWhenCompleted;
                                               forKey: @"NSInitialToolTipDelay"];
     
     //check whether this app has been launched before that or not
-    NSArray* runningApp = [[NSWorkspace sharedWorkspace] runningApplications];
-    if ([runningApp containsObject:XONEKEY_BUNDLE]) { //if already running -> exit
-        [NSApp terminate:nil];
-        return;
+    for (NSRunningApplication *app in [[NSWorkspace sharedWorkspace] runningApplications]) {
+        if ([app.bundleIdentifier isEqualToString:XONEKEY_BUNDLE] &&
+            ![app isEqual:[NSRunningApplication currentApplication]]) {
+            [NSApp terminate:nil];
+            return;
+        }
     }
     
     // check if user granted Accessabilty permission

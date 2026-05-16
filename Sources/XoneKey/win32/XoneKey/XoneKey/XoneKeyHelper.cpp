@@ -251,6 +251,9 @@ void XoneKeyHelper::initialize()
 		_hWatcherThread = CreateThread(NULL, 0, ProcessWatcherThreadProc, NULL, 0, NULL);
 		if (_hWatcherThread != NULL) {
 			_watcherRunning = true;
+		} else {
+			CloseHandle(_hWatcherEvent);       _hWatcherEvent = NULL;
+			CloseHandle(_hStopWatcherEvent);   _hStopWatcherEvent = NULL;
 		}
 	}
 }

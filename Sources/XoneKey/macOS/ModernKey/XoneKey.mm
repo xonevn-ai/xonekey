@@ -730,19 +730,16 @@ extern "C" {
         //if "turn off Vietnamese when in other language" mode on
         if(vOtherLanguage){
             TISInputSourceRef isource = TISCopyCurrentKeyboardInputSource();
-            if ( isource != NULL )
-            {
-                CFArrayRef languages = (CFArrayRef) TISGetInputSourceProperty(isource, kTISPropertyInputSourceLanguages);
-                
-                if (CFArrayGetCount(languages) > 0) {
+            if (isource != NULL) {
+                CFArrayRef languages = (CFArrayRef)TISGetInputSourceProperty(isource, kTISPropertyInputSourceLanguages);
+                BOOL isEnglish = YES;
+                if (languages != NULL && CFArrayGetCount(languages) > 0) {
+                    // langRef is a borrowed reference (CF Get rule) — must NOT be released
                     CFStringRef langRef = (CFStringRef)CFArrayGetValueAtIndex(languages, 0);
-                    NSString *currentLanguage = (__bridge NSString *)langRef;
-                    if(![currentLanguage isLike:@"en"]){
-                        return event;
-                    }
-                    CFRelease(langRef);
-                    CFRelease(isource);
+                    isEnglish = [(__bridge NSString *)langRef isLike:@"en"];
                 }
+                CFRelease(isource); // always release the Copy'd source
+                if (!isEnglish) return event;
             }
         }
         
